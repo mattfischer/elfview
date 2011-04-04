@@ -4,6 +4,8 @@
 #include <wx/menu.h>
 #include <wx/filedlg.h>
 
+#include "Elf32.h"
+
 enum {
 	ID_File_Open,
 	ID_File_Exit
@@ -27,13 +29,21 @@ FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
 	mWindowMain = new WindowMain(splitter, -1);
 
 	splitter->SplitVertically(mWindowNavigator, mWindowMain);
+
+	mFile = NULL;
 }
 
 void FrameMain::OnFileOpen(wxCommandEvent &e)
 {
 	wxFileDialog *dialog = new wxFileDialog(this, "Open File", "", "", "Object Files (*.o)|*.o|Shared Object Files (*.so)|*.so|All Files (*.*)|*", wxFD_OPEN);
 
-	dialog->ShowModal();
+	int result = dialog->ShowModal();
+
+	if(result == wxID_OK) {
+		mFile = new ElfFile(dialog->GetPath());
+
+		mWindowMain->SetFile(mFile);
+	}
 }
 
 void FrameMain::OnFileExit(wxCommandEvent &e)

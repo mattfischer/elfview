@@ -39,6 +39,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include&quot;;&quot;C:\wxWidgets-2.8.12\lib\vc_lib\mswd&quot;"
 				RuntimeLibrary="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -53,6 +54,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib comctl32.lib rpcrt4.lib"
 				AdditionalLibraryDirectories="&quot;C:\wxWidgets-2.8.12\lib\vc_lib&quot;"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -153,7 +155,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ElfFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FrameMain.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewElfHeader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewProgramHeaders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewSectionHeaders.cpp"
 				>
 			</File>
 			<File
@@ -175,7 +193,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Elf32.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ElfFile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FrameMain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewElfHeader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewProgramHeaders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewSectionHeaders.h"
 				>
 			</File>
 			<File

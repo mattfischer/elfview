@@ -5,6 +5,7 @@
 
 #include "WindowNavigator.h"
 #include "WindowMain.h"
+#include "ElfFile.h"
 
 class FrameMain : public wxFrame
 {
@@ -14,6 +15,8 @@ public:
 protected:
 	WindowNavigator *mWindowNavigator;
 	WindowMain *mWindowMain;
+
+	ElfFile *mFile;
 
 	void OnFileOpen(wxCommandEvent &e);
 	void OnFileExit(wxCommandEvent &e);
