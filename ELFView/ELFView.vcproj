@@ -163,6 +163,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\View.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewElfHeader.cpp"
 				>
 			</File>
@@ -202,6 +206,10 @@
 			</File>
 			<File
 				RelativePath=".\FrameMain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\View.h"
 				>
 			</File>
 			<File

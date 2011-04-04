@@ -3,12 +3,10 @@
 
 #include <wx/notebook.h>
 #include <wx/htmllbox.h>
+#include <wx/list.h>
 
 #include "ElfFile.h"
-
-#include "ViewElfHeader.h"
-#include "ViewSectionHeaders.h"
-#include "ViewProgramHeaders.h"
+#include "View.h"
 
 class WindowMain : public wxNotebook
 {
@@ -18,11 +16,10 @@ public:
 	void SetFile(ElfFile *file);
 
 protected:
-	ViewElfHeader *mElfHeader;
-	ViewSectionHeaders *mSectionHeaders;
-	ViewProgramHeaders *mProgramHeaders;
-
 	ElfFile *mFile;
-};
 
+	ViewList mViewList;
+
+	void AddView(View *view);
+};
 #endif

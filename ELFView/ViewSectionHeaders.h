@@ -1,18 +1,19 @@
 #ifndef VIEW_SECTION_HEADERS_H
 #define VIEW_SECTION_HEADERS_H
 
+#include "View.h"
+
 #include <wx/htmllbox.h>
 
-#include "ElfFile.h"
-
-class ViewSectionHeaders : public wxSimpleHtmlListBox
+class ViewSectionHeaders : public View
 {
 public:
-	ViewSectionHeaders(wxWindow *parent, wxWindowID id);
-
-	void SetFile(ElfFile *file);
+	ViewSectionHeaders();
 
 protected:
-	ElfFile *mFile;
+	wxSimpleHtmlListBox *mHtmlListBox;
+
+	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doUpdateWindow();
 };
 #endif

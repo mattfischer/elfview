@@ -1,34 +1,40 @@
 #include "ViewSectionHeaders.h"
 
-ViewSectionHeaders::ViewSectionHeaders(wxWindow *parent, wxWindowID id)
-: wxSimpleHtmlListBox(parent, id)
+ViewSectionHeaders::ViewSectionHeaders()
 {
+	SetName("Section Headers");
 }
 
-void ViewSectionHeaders::SetFile(ElfFile *file)
+wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mFile = file;
+	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
 
-	Clear();
+	return mHtmlListBox;
+}
 
-	if(mFile->GetSectionHeaders()) {
-		for(int i=0; i<mFile->GetHeader()->e_shnum;i++) {
-			const Elf32_Shdr *header = mFile->GetSectionHeaders() + i;
+void ViewSectionHeaders::doUpdateWindow()
+{
+	mHtmlListBox->Clear();
 
-			Append(wxString::Format("<b>Section %i</b>", i));
-			Append(wxString::Format("Name: %s", mFile->GetString(mFile->GetHeader()->e_shstrndx, header->sh_name).c_str()));
-			Append(wxString::Format("Type: 0x%x", header->sh_type));
-			Append(wxString::Format("Flags: 0x%x", header->sh_flags));
-			Append(wxString::Format("Address: 0x%x", header->sh_addr));
-			Append(wxString::Format("Offset: 0x%x", header->sh_offset));
-			Append(wxString::Format("Size: 0x%x", header->sh_size));
-			Append(wxString::Format("Link: 0x%x", header->sh_link));
-			Append(wxString::Format("Info: 0x%x", header->sh_info));
-			Append(wxString::Format("Address Alignment: 0x%x", header->sh_addralign));
-			Append(wxString::Format("Entry Size: 0x%x", header->sh_entsize));
-			Append("");
+	if(GetFile()->GetSectionHeaders()) {
+		for(int i=0; i<GetFile()->GetHeader()->e_shnum;i++) {
+			const Elf32_Shdr *header = GetFile()->GetSectionHeaders() + i;
+
+			mHtmlListBox->Append(wxString::Format("<b>Section %i</b>", i));
+			wxString name = GetFile()->GetString(GetFile()->GetHeader()->e_shstrndx, header->sh_name);
+			mHtmlListBox->Append(wxString::Format("Name: %s", name.c_str()));
+			mHtmlListBox->Append(wxString::Format("Type: 0x%x", header->sh_type));
+			mHtmlListBox->Append(wxString::Format("Flags: 0x%x", header->sh_flags));
+			mHtmlListBox->Append(wxString::Format("Address: 0x%x", header->sh_addr));
+			mHtmlListBox->Append(wxString::Format("Offset: 0x%x", header->sh_offset));
+			mHtmlListBox->Append(wxString::Format("Size: 0x%x", header->sh_size));
+			mHtmlListBox->Append(wxString::Format("Link: 0x%x", header->sh_link));
+			mHtmlListBox->Append(wxString::Format("Info: 0x%x", header->sh_info));
+			mHtmlListBox->Append(wxString::Format("Address Alignment: 0x%x", header->sh_addralign));
+			mHtmlListBox->Append(wxString::Format("Entry Size: 0x%x", header->sh_entsize));
+			mHtmlListBox->Append("");
 		}
 	} else {
-		Append("<i>No Section Headers</i>");
+		mHtmlListBox->Append("<i>No Section Headers</i>");
 	}
 }

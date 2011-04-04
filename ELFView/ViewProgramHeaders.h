@@ -1,18 +1,19 @@
 #ifndef VIEW_PROGRAM_HEADERS_H
 #define VIEW_PROGRAM_HEADERS_H
 
+#include "View.h"
+
 #include <wx/htmllbox.h>
 
-#include "ElfFile.h"
-
-class ViewProgramHeaders : public wxSimpleHtmlListBox
+class ViewProgramHeaders : public View
 {
 public:
-	ViewProgramHeaders(wxWindow *parent, wxWindowID id);
-
-	void SetFile(ElfFile *file);
+	ViewProgramHeaders();
 
 protected:
-	ElfFile *mFile;
+	wxSimpleHtmlListBox *mHtmlListBox;
+
+	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doUpdateWindow();
 };
 #endif

@@ -1,32 +1,37 @@
 #include "ViewProgramHeaders.h"
 
-ViewProgramHeaders::ViewProgramHeaders(wxWindow *parent, wxWindowID id)
-: wxSimpleHtmlListBox(parent, id)
+ViewProgramHeaders::ViewProgramHeaders()
 {
+	SetName("Program Headers");
 }
 
-void ViewProgramHeaders::SetFile(ElfFile *file)
+wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mFile = file;
+	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
 
-	Clear();
+	return mHtmlListBox;
+}
 
-	if(mFile->GetProgramHeaders()) {
-		for(int i=0; i<mFile->GetHeader()->e_phnum;i++) {
-			const Elf32_Phdr *header = mFile->GetProgramHeaders() + i;
+void ViewProgramHeaders::doUpdateWindow()
+{
+	mHtmlListBox->Clear();
 
-			Append(wxString::Format("<b>Segment %i</b>", i));
-			Append(wxString::Format("Type: 0x%x", header->p_type));
-			Append(wxString::Format("Offset: 0x%x", header->p_offset));
-			Append(wxString::Format("VAddr: 0x%x", header->p_vaddr));
-			Append(wxString::Format("PAddr: 0x%x", header->p_paddr));
-			Append(wxString::Format("File Size: 0x%x", header->p_filesz));
-			Append(wxString::Format("Memory Size: 0x%x", header->p_memsz));
-			Append(wxString::Format("Flags: 0x%x", header->p_flags));
-			Append(wxString::Format("Alignment: 0x%x", header->p_align));
-			Append("");
+	if(GetFile()->GetProgramHeaders()) {
+		for(int i=0; i<GetFile()->GetHeader()->e_phnum;i++) {
+			const Elf32_Phdr *header = GetFile()->GetProgramHeaders() + i;
+
+			mHtmlListBox->Append(wxString::Format("<b>Segment %i</b>", i));
+			mHtmlListBox->Append(wxString::Format("Type: 0x%x", header->p_type));
+			mHtmlListBox->Append(wxString::Format("Offset: 0x%x", header->p_offset));
+			mHtmlListBox->Append(wxString::Format("VAddr: 0x%x", header->p_vaddr));
+			mHtmlListBox->Append(wxString::Format("PAddr: 0x%x", header->p_paddr));
+			mHtmlListBox->Append(wxString::Format("File Size: 0x%x", header->p_filesz));
+			mHtmlListBox->Append(wxString::Format("Memory Size: 0x%x", header->p_memsz));
+			mHtmlListBox->Append(wxString::Format("Flags: 0x%x", header->p_flags));
+			mHtmlListBox->Append(wxString::Format("Alignment: 0x%x", header->p_align));
+			mHtmlListBox->Append("");
 		}
 	} else {
-		Append("<i>No Program Headers</i>");
+		mHtmlListBox->Append("<i>No Program Headers</i>");
 	}
 }
