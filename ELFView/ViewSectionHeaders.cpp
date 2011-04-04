@@ -20,8 +20,14 @@ void ViewSectionHeaders::doUpdateWindow()
 		for(int i=0; i<GetFile()->GetHeader()->e_shnum;i++) {
 			const Elf32_Shdr *header = GetFile()->GetSectionHeaders() + i;
 
-			mHtmlListBox->Append(wxString::Format("<b>Section %i</b>", i));
 			wxString name = GetFile()->GetString(GetFile()->GetHeader()->e_shstrndx, header->sh_name);
+
+			if(name == "") {
+				mHtmlListBox->Append(wxString::Format("<b>Section %i</b>", i));
+			} else {
+				mHtmlListBox->Append(wxString::Format("<b>Section %i (%s)</b>", i, name.c_str()));
+			}
+
 			mHtmlListBox->Append(wxString::Format("Name: %s", name.c_str()));
 			mHtmlListBox->Append(wxString::Format("Type: 0x%x", header->sh_type));
 			mHtmlListBox->Append(wxString::Format("Flags: 0x%x", header->sh_flags));

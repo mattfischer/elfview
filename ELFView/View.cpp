@@ -43,3 +43,13 @@ wxWindow *View::CreateWindow(wxWindow *parent, wxWindowID id)
 
 	return mWindow;
 }
+
+void View::SetLocation(wxString location)
+{
+	mLocation = location;
+}
+
+wxString View::GetLocation()
+{
+	return mLocation;
+}

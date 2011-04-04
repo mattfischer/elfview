@@ -7,6 +7,7 @@
 
 #include "ElfFile.h"
 #include "View.h"
+#include "ViewManager.h"
 
 class WindowMain : public wxNotebook
 {
@@ -15,11 +16,10 @@ public:
 
 	void SetFile(ElfFile *file);
 
+	void AddWindow(wxWindow *window, wxString name);
+	void SwitchToWindow(int window);
+
 protected:
-	ElfFile *mFile;
-
-	ViewList mViewList;
-
-	void AddView(View *view);
+	ViewManager *mViewManager;
 };
 #endif

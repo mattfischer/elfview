@@ -17,6 +17,9 @@ public:
 
 	wxWindow *CreateWindow(wxWindow *parent, wxWindowID id);
 
+	void SetLocation(wxString location);
+	wxString GetLocation();
+
 protected:
 	void SetWindow(wxWindow *window);
 	void SetName(wxString name);
@@ -28,6 +31,7 @@ private:
 	wxString mName;
 	ElfFile *mFile;
 	wxWindow *mWindow;
+	wxString mLocation;
 };
 
 WX_DECLARE_LIST(View, ViewList);

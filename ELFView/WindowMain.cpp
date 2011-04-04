@@ -1,33 +1,26 @@
 #include "WindowMain.h"
 
-#include "ViewElfHeader.h"
-#include "ViewSectionHeaders.h"
-#include "ViewProgramHeaders.h"
-
 WindowMain::WindowMain(wxWindow *parent, wxWindowID id)
 : wxNotebook(parent, id)
 {
-	mFile = NULL;
+	mViewManager = new ViewManager(this);
 
-	AddView(new ViewElfHeader());
-	AddView(new ViewSectionHeaders());
-	AddView(new ViewProgramHeaders());
+	mViewManager->AddLocation("header");
+	mViewManager->AddLocation("section/headers");
+	mViewManager->AddLocation("segment/headers");
 }
 
 void WindowMain::SetFile(ElfFile *file)
 {
-	mFile = file;
-
-	for(ViewList::iterator it = mViewList.begin(); it != mViewList.end(); it++) {
-		(*it)->SetFile(file);
-	}
+	mViewManager->SetFile(file);
 }
 
-void WindowMain::AddView(View *view)
+void WindowMain::AddWindow(wxWindow *window, wxString name)
 {
-	mViewList.Append(view);
-	view->SetFile(mFile);
+	AddPage(window, name);
+}
 
-	wxWindow *window = view->CreateWindow(this, -1);
-	AddPage(window, view->GetName());
+void WindowMain::SwitchToWindow(int window)
+{
+	ChangeSelection(window);
 }

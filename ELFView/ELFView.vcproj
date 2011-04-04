@@ -171,6 +171,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ViewManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewProgramHeaders.cpp"
 				>
 			</File>
@@ -214,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\ViewElfHeader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewManager.h"
 				>
 			</File>
 			<File
