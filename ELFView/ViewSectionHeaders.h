@@ -8,12 +8,11 @@
 class ViewSectionHeaders : public View
 {
 public:
-	ViewSectionHeaders();
+	ViewSectionHeaders(ElfFile *file, wxString location);
 
 protected:
 	wxSimpleHtmlListBox *mHtmlListBox;
 
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
-	virtual void doUpdateWindow();
 };
 #endif

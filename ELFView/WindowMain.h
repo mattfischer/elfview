@@ -16,10 +16,11 @@ public:
 
 	void SetFile(ElfFile *file);
 
-	void AddWindow(wxWindow *window, wxString name);
-	void SwitchToWindow(int window);
-
+	void AddViewPage(wxWindow *window, wxString name);
+	void SwitchToViewPage(int page);
+	void RemoveViewPage(int page);
 protected:
 	ViewManager *mViewManager;
+	ElfFile *mFile;
 };
 #endif

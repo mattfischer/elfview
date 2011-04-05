@@ -9,60 +9,26 @@
 ViewManager::ViewManager(WindowMain *windowMain)
 {
 	mWindowMain = windowMain;
-	mFile = NULL;
 }
 
-void ViewManager::SetFile(ElfFile *file)
+void ViewManager::GoToLocation(ElfFile *file, wxString location)
 {
-	mFile = file;
+	int idx = AddLocation(file, location);	
 
-	for(ViewList::iterator it = mViewList.begin(); it != mViewList.end(); it++) {
-		(*it)->SetFile(file);
+	if(idx != -1) {
+		mWindowMain->SwitchToViewPage(idx);
 	}
 }
 
-View *ViewManager::FindView(wxString location, int &idx)
-{
-	View *view = NULL;
-	int i = 0;
-	for(ViewList::iterator it = mViewList.begin(); it != mViewList.end(); it++) {
-		View *view = *it;
-		if(view->GetLocation() == location) {
-			idx = i;
-			return view;
-		}
-		i++;
-	}
-
-	idx = -1;
-	return NULL;
-}
-
-int ViewManager::AddView(View *view)
-{
-	if(view) {
-		mViewList.Append(view);
-		view->SetFile(mFile);
-
-		wxWindow *window = view->CreateWindow(mWindowMain, -1);
-		mWindowMain->AddWindow(window, view->GetName());
-
-		return mViewList.GetCount() - 1;
-	}
-
-	return -1;
-}
-
-int ViewManager::AddLocation(wxString location)
+int ViewManager::AddLocation(ElfFile *file, wxString location)
 {
 	int idx;
-	View *view = FindView(location, idx);
+	View *view = FindView(file, location, idx);
 
 	if(!view) {
-		view = CreateView(location);
+		view = CreateView(file, location);
 
 		if(view) {
-			view->SetLocation(location);
 			idx = AddView(view);
 		} else {
 			idx = -1;
@@ -72,22 +38,55 @@ int ViewManager::AddLocation(wxString location)
 	return idx;
 }
 
-void ViewManager::GoToLocation(wxString location)
+void ViewManager::CloseAllViews(ElfFile *file)
 {
-	int idx = AddLocation(location);	
-
-	if(idx != -1) {
-		mWindowMain->SwitchToWindow(idx);
+	for(int i=0; i<mViewList.size(); i++) {
+		View *view = mViewList[i];
+		if(view->GetFile() == file) {
+			mViewList.erase(mViewList.begin() + i);
+			delete view;
+			mWindowMain->RemoveViewPage(i);
+			i--;
+		}
 	}
 }
 
-View *ViewManager::CreateView(wxString location)
+View *ViewManager::FindView(ElfFile *file, wxString location, int &idx)
+{
+	View *view = NULL;
+	for(int i=0; i<mViewList.size(); i++) {
+		View *view = mViewList[i];
+		if(view->GetFile() == file && view->GetLocation() == location) {
+			idx = i;
+			return view;
+		}
+	}
+
+	idx = -1;
+	return NULL;
+}
+
+int ViewManager::AddView(View *view)
+{
+	if(view) {
+		mViewList.push_back(view);
+
+		wxWindow *window = view->CreateWindow(mWindowMain, wxID_ANY);
+		mWindowMain->AddViewPage(window, view->GetName());
+
+		return mViewList.size() - 1;
+	}
+
+	return -1;
+}
+
+View *ViewManager::CreateView(ElfFile *file, wxString location)
 {
 	if(location == "header") {
-		return new ViewElfHeader();
+		return new ViewElfHeader(file, location);
 	} else if(location == "section/headers") {
-		return new ViewSectionHeaders();
+		return new ViewSectionHeaders(file, location);
 	} else if(location == "segment/headers") {
-		return new ViewProgramHeaders();
+		return new ViewProgramHeaders(file, location);
 	} else return NULL;
 }

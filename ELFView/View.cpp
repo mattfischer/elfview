@@ -1,12 +1,10 @@
 #include "View.h"
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(ViewList);
-
-View::View()
+View::View(ElfFile *file, wxString location)
+: mFile(file),
+  mLocation(location),
+  mWindow(NULL)
 {
-	mFile = NULL;
-	mWindow = NULL;
 }
 
 wxString View::GetName()
@@ -14,42 +12,24 @@ wxString View::GetName()
 	return mName;
 }
 
+ElfFile *View::GetFile()
+{
+	return mFile;
+}
+
 void View::SetName(wxString name)
 {
 	mName = name;
 }
 
-void View::SetFile(ElfFile *file)
+wxString View::GetLocation()
 {
-	mFile = file;
-
-	if(mWindow) {
-		doUpdateWindow();
-	}
-}
-
-ElfFile *View::GetFile()
-{
-	return mFile;
+	return mLocation;
 }
 
 wxWindow *View::CreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mWindow = doCreateWindow(parent, id);
 
-	if(mFile) {
-		doUpdateWindow();
-	}
-
 	return mWindow;
-}
-
-void View::SetLocation(wxString location)
-{
-	mLocation = location;
-}
-
-wxString View::GetLocation()
-{
-	return mLocation;
 }

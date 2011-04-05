@@ -5,6 +5,8 @@
 
 #include <wx/file.h>
 
+#include <map>
+
 class ElfFile
 {
 public:
@@ -24,6 +26,8 @@ protected:
 	Elf32_Ehdr mHeader;
 	Elf32_Shdr *mSectionHeaders;
 	Elf32_Phdr *mProgramHeaders;
+
+	std::map<int, char*> mStringTables;
 };
 
 #endif

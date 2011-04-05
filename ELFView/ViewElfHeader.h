@@ -8,12 +8,11 @@
 class ViewElfHeader : public View
 {
 public:
-	ViewElfHeader();
+	ViewElfHeader(ElfFile *file, wxString location);
 
 protected:
 	wxSimpleHtmlListBox *mHtmlListBox;
 
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
-	virtual void doUpdateWindow();
 };
 #endif

@@ -1,26 +1,42 @@
 #include "WindowMain.h"
 
+wxWindow *gWindowMain;
+
 WindowMain::WindowMain(wxWindow *parent, wxWindowID id)
 : wxNotebook(parent, id)
 {
 	mViewManager = new ViewManager(this);
+	mFile = NULL;
 
-	mViewManager->AddLocation("header");
-	mViewManager->AddLocation("section/headers");
-	mViewManager->AddLocation("segment/headers");
+	gWindowMain = this;
 }
 
 void WindowMain::SetFile(ElfFile *file)
 {
-	mViewManager->SetFile(file);
+	Show(false);
+	if(mFile != NULL) {
+		mViewManager->CloseAllViews(mFile);
+		delete mFile;
+	}
+	mFile = file;
+	
+	mViewManager->AddLocation(file, "header");
+	mViewManager->AddLocation(file, "section/headers");
+	mViewManager->AddLocation(file, "segment/headers");
+	Show(true);
 }
 
-void WindowMain::AddWindow(wxWindow *window, wxString name)
+void WindowMain::AddViewPage(wxWindow *window, wxString name)
 {
 	AddPage(window, name);
 }
 
-void WindowMain::SwitchToWindow(int window)
+void WindowMain::SwitchToViewPage(int page)
 {
-	ChangeSelection(window);
+	ChangeSelection(page);
+}
+
+void WindowMain::RemoveViewPage(int page)
+{
+	DeletePage(page);
 }

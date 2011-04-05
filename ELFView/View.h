@@ -2,37 +2,30 @@
 #define VIEW_H
 
 #include <wx/string.h>
-#include <wx/window.h>
+#include <wx/panel.h>
 
 #include "ElfFile.h"
 
 class View
 {
 public:
-	View();
+	View(ElfFile *file, wxString location);
 
 	wxString GetName();
-	void SetFile(ElfFile *file);
+	wxString GetLocation();
 	ElfFile *GetFile();
 
 	wxWindow *CreateWindow(wxWindow *parent, wxWindowID id);
 
-	void SetLocation(wxString location);
-	wxString GetLocation();
-
 protected:
-	void SetWindow(wxWindow *window);
 	void SetName(wxString name);
-
+	
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id) = 0;
-	virtual void doUpdateWindow() = 0;
 
 private:
-	wxString mName;
 	ElfFile *mFile;
-	wxWindow *mWindow;
+	wxString mName;
 	wxString mLocation;
+	wxWindow *mWindow;
 };
-
-WX_DECLARE_LIST(View, ViewList);
 #endif

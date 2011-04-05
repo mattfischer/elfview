@@ -1,6 +1,9 @@
 #include "ViewProgramHeaders.h"
 
-ViewProgramHeaders::ViewProgramHeaders()
+extern wxWindow *gWindowMain;
+
+ViewProgramHeaders::ViewProgramHeaders(ElfFile *file, wxString location)
+: View(file, location)
 {
 	SetName("Program Headers");
 }
@@ -9,29 +12,28 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
 
-	return mHtmlListBox;
-}
-
-void ViewProgramHeaders::doUpdateWindow()
-{
-	mHtmlListBox->Clear();
+	wxArrayString arrayString;
 
 	if(GetFile()->GetProgramHeaders()) {
 		for(int i=0; i<GetFile()->GetHeader()->e_phnum;i++) {
 			const Elf32_Phdr *header = GetFile()->GetProgramHeaders() + i;
 
-			mHtmlListBox->Append(wxString::Format("<b>Segment %i</b>", i));
-			mHtmlListBox->Append(wxString::Format("Type: 0x%x", header->p_type));
-			mHtmlListBox->Append(wxString::Format("Offset: 0x%x", header->p_offset));
-			mHtmlListBox->Append(wxString::Format("VAddr: 0x%x", header->p_vaddr));
-			mHtmlListBox->Append(wxString::Format("PAddr: 0x%x", header->p_paddr));
-			mHtmlListBox->Append(wxString::Format("File Size: 0x%x", header->p_filesz));
-			mHtmlListBox->Append(wxString::Format("Memory Size: 0x%x", header->p_memsz));
-			mHtmlListBox->Append(wxString::Format("Flags: 0x%x", header->p_flags));
-			mHtmlListBox->Append(wxString::Format("Alignment: 0x%x", header->p_align));
-			mHtmlListBox->Append("");
+			arrayString.Add(wxString::Format("<b>Segment %i</b>", i));
+			arrayString.Add(wxString::Format("Type: 0x%x", header->p_type));
+			arrayString.Add(wxString::Format("Offset: 0x%x", header->p_offset));
+			arrayString.Add(wxString::Format("VAddr: 0x%x", header->p_vaddr));
+			arrayString.Add(wxString::Format("PAddr: 0x%x", header->p_paddr));
+			arrayString.Add(wxString::Format("File Size: 0x%x", header->p_filesz));
+			arrayString.Add(wxString::Format("Memory Size: 0x%x", header->p_memsz));
+			arrayString.Add(wxString::Format("Flags: 0x%x", header->p_flags));
+			arrayString.Add(wxString::Format("Alignment: 0x%x", header->p_align));
+			arrayString.Add("");
 		}
 	} else {
-		mHtmlListBox->Append("<i>No Program Headers</i>");
+		arrayString.Add("<i>No Program Headers</i>");
 	}
+
+	mHtmlListBox->Append(arrayString);
+
+	return mHtmlListBox;
 }

@@ -44,9 +44,15 @@ const Elf32_Phdr *ElfFile::GetProgramHeaders()
 
 wxString ElfFile::GetString(Elf32_Word stringTable, Elf32_Word offset)
 {
-	char *buffer = new char[mSectionHeaders[stringTable].sh_size];
+	char *table;
 
-	Read(buffer, mSectionHeaders[stringTable].sh_offset, mSectionHeaders[stringTable].sh_size);
+	if(mStringTables.find(stringTable) != mStringTables.end()) {
+		table = mStringTables[stringTable];
+	} else {
+		table = new char[mSectionHeaders[stringTable].sh_size];
+		Read(table, mSectionHeaders[stringTable].sh_offset, mSectionHeaders[stringTable].sh_size);
+		mStringTables[stringTable] = table;
+	}
 
-	return wxString(buffer + offset);
+	return wxString(table + offset);
 }

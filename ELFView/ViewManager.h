@@ -6,6 +6,8 @@
 #include "View.h"
 #include "ElfFile.h"
 
+#include <vector>
+
 class WindowMain;
 
 class ViewManager
@@ -13,18 +15,17 @@ class ViewManager
 public:
 	ViewManager(WindowMain *windowMain);
 
-	void SetFile(ElfFile *file);
+	void GoToLocation(ElfFile *file, wxString location);
+	int AddLocation(ElfFile *file, wxString location);
 
-	void GoToLocation(wxString location);
-	int AddLocation(wxString location);
+	void CloseAllViews(ElfFile *file);
 
 protected:
 	WindowMain *mWindowMain;
-	ViewList mViewList;
-	ElfFile *mFile;
+	std::vector<View*> mViewList;
 
-	View *FindView(wxString location, int &idx);
+	View *FindView(ElfFile *file, wxString location, int &idx);
+	View *CreateView(ElfFile *file, wxString location);
 	int AddView(View *view);
-	View *CreateView(wxString location);
 };
 #endif
