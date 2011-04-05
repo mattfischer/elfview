@@ -23,6 +23,7 @@ void WindowMain::SetFile(ElfFile *file)
 	mViewManager->AddLocation(file, "header");
 	mViewManager->AddLocation(file, "section/headers");
 	mViewManager->AddLocation(file, "segment/headers");
+	mViewManager->AddLocation(file, "section/8");
 	Show(true);
 }
 

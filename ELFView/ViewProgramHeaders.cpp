@@ -14,9 +14,9 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	wxArrayString arrayString;
 
-	if(GetFile()->GetProgramHeaders()) {
+	if(GetFile()->GetHeader()->e_phnum > 0) {
 		for(int i=0; i<GetFile()->GetHeader()->e_phnum;i++) {
-			const Elf32_Phdr *header = GetFile()->GetProgramHeaders() + i;
+			const Elf32_Phdr *header = GetFile()->GetProgramHeader(i);
 
 			arrayString.Add(wxString::Format("<b>Segment %i</b>", i));
 			arrayString.Add(wxString::Format("Type: 0x%x", header->p_type));

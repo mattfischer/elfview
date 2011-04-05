@@ -14,11 +14,11 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	wxArrayString arrayString;
 
-	if(GetFile()->GetSectionHeaders()) {
+	if(GetFile()->GetHeader()->e_shnum > 0) {
 		for(int i=0; i<GetFile()->GetHeader()->e_shnum;i++) {
-			const Elf32_Shdr *header = GetFile()->GetSectionHeaders() + i;
+			const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
 
-			wxString name = GetFile()->GetString(GetFile()->GetHeader()->e_shstrndx, header->sh_name);
+			wxString name = GetFile()->GetSectionName(i);
 
 			if(name == "") {
 				arrayString.Add(wxString::Format("<b>Section %i</b>", i));

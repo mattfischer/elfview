@@ -5,6 +5,7 @@
 #include "ViewElfHeader.h"
 #include "ViewSectionHeaders.h"
 #include "ViewProgramHeaders.h"
+#include "ViewSymbolTable.h"
 
 ViewManager::ViewManager(WindowMain *windowMain)
 {
@@ -88,5 +89,7 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 		return new ViewSectionHeaders(file, location);
 	} else if(location == "segment/headers") {
 		return new ViewProgramHeaders(file, location);
+	} else if(location.StartsWith("section/")) {
+		return new ViewSymbolTable(file, location); 
 	} else return NULL;
 }
