@@ -2,10 +2,10 @@
 
 wxWindow *gWindowMain;
 
-WindowMain::WindowMain(wxWindow *parent, wxWindowID id)
+WindowMain::WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager)
 : wxNotebook(parent, id)
 {
-	mViewManager = new ViewManager(this);
+	mViewManager = viewManager;
 	mFile = NULL;
 
 	gWindowMain = this;
@@ -23,7 +23,7 @@ void WindowMain::SetFile(ElfFile *file)
 	mViewManager->AddLocation(file, "header");
 	mViewManager->AddLocation(file, "section/headers");
 	mViewManager->AddLocation(file, "segment/headers");
-	mViewManager->AddLocation(file, "section/8");
+
 	Show(true);
 }
 

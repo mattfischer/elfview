@@ -13,7 +13,9 @@ class WindowMain;
 class ViewManager
 {
 public:
-	ViewManager(WindowMain *windowMain);
+	ViewManager();
+
+	void SetWindowMain(WindowMain *windowMain);
 
 	void GoToLocation(ElfFile *file, wxString location);
 	int AddLocation(ElfFile *file, wxString location);

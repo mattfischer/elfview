@@ -12,7 +12,7 @@
 class WindowMain : public wxNotebook
 {
 public:
-	WindowMain(wxWindow *parent, wxWindowID id);
+	WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager);
 
 	void SetFile(ElfFile *file);
 

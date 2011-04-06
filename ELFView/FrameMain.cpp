@@ -23,10 +23,14 @@ FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
 	menuBar->Append(fileMenu, "File");
 	SetMenuBar(menuBar);
 
+	mViewManager = new ViewManager;
+
 	wxSplitterWindow *splitter = new wxSplitterWindow(this, -1);
 
-	mWindowNavigator = new WindowNavigator(splitter, -1);
-	mWindowMain = new WindowMain(splitter, -1);
+	mWindowNavigator = new WindowNavigator(splitter, -1, mViewManager);
+	mWindowMain = new WindowMain(splitter, -1, mViewManager);
+
+	mViewManager->SetWindowMain(mWindowMain);
 
 	splitter->SplitVertically(mWindowNavigator, mWindowMain);
 
@@ -43,6 +47,7 @@ void FrameMain::OnFileOpen(wxCommandEvent &e)
 		mFile = new ElfFile(dialog->GetPath());
 
 		mWindowMain->SetFile(mFile);
+		mWindowNavigator->SetFile(mFile);
 	}
 }
 

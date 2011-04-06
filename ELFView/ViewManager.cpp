@@ -7,7 +7,11 @@
 #include "ViewProgramHeaders.h"
 #include "ViewSymbolTable.h"
 
-ViewManager::ViewManager(WindowMain *windowMain)
+ViewManager::ViewManager()
+{
+}
+
+void ViewManager::SetWindowMain(WindowMain *windowMain)
 {
 	mWindowMain = windowMain;
 }
