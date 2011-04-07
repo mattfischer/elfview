@@ -6,6 +6,11 @@ WindowMain::WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager
 : wxNotebook(parent, id)
 {
 	mViewManager = viewManager;
+
+	mViewManager->Connect(EVT_VM_VIEW_ADDED, (wxObjectEventFunction)&WindowMain::OnViewAdded, NULL, this);
+	mViewManager->Connect(EVT_VM_VIEW_REMOVED, (wxObjectEventFunction)&WindowMain::OnViewRemoved, NULL, this);
+	mViewManager->Connect(EVT_VM_CURRENT_VIEW_CHANGED, (wxObjectEventFunction)&WindowMain::OnCurrentViewChanged, NULL, this);
+
 	mFile = NULL;
 
 	gWindowMain = this;
@@ -27,17 +32,20 @@ void WindowMain::SetFile(ElfFile *file)
 	Show(true);
 }
 
-void WindowMain::AddViewPage(wxWindow *window, wxString name)
+void WindowMain::OnViewAdded(wxCommandEvent &e)
 {
-	AddPage(window, name);
+	View *view = (View*)e.GetClientData();
+
+	wxWindow *window = view->CreateWindow(this, wxID_ANY);
+	AddPage(window, view->GetName());
 }
 
-void WindowMain::SwitchToViewPage(int page)
+void WindowMain::OnViewRemoved(wxCommandEvent &e)
 {
-	ChangeSelection(page);
+	DeletePage(e.GetInt());
 }
 
-void WindowMain::RemoveViewPage(int page)
+void WindowMain::OnCurrentViewChanged(wxCommandEvent &e)
 {
-	DeletePage(page);
+	ChangeSelection(e.GetInt());
 }

@@ -16,10 +16,12 @@ public:
 
 	void SetFile(ElfFile *file);
 
-	void AddViewPage(wxWindow *window, wxString name);
-	void SwitchToViewPage(int page);
-	void RemoveViewPage(int page);
 protected:
+
+	void OnViewAdded(wxCommandEvent &e);
+	void OnViewRemoved(wxCommandEvent &e);
+	void OnCurrentViewChanged(wxCommandEvent &e);
+
 	ViewManager *mViewManager;
 	ElfFile *mFile;
 };

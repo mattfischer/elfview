@@ -1,19 +1,16 @@
 #include "ViewManager.h"
 
-#include "WindowMain.h"
-
 #include "ViewElfHeader.h"
 #include "ViewSectionHeaders.h"
 #include "ViewProgramHeaders.h"
 #include "ViewSymbolTable.h"
 
+DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
+DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
+DEFINE_EVENT_TYPE(EVT_VM_CURRENT_VIEW_CHANGED)
+
 ViewManager::ViewManager()
 {
-}
-
-void ViewManager::SetWindowMain(WindowMain *windowMain)
-{
-	mWindowMain = windowMain;
 }
 
 void ViewManager::GoToLocation(ElfFile *file, wxString location)
@@ -21,7 +18,9 @@ void ViewManager::GoToLocation(ElfFile *file, wxString location)
 	int idx = AddLocation(file, location);	
 
 	if(idx != -1) {
-		mWindowMain->SwitchToViewPage(idx);
+		wxCommandEvent evt(EVT_VM_CURRENT_VIEW_CHANGED);
+		evt.SetInt(idx);
+		ProcessEvent(evt);
 	}
 }
 
@@ -50,7 +49,9 @@ void ViewManager::CloseAllViews(ElfFile *file)
 		if(view->GetFile() == file) {
 			mViewList.erase(mViewList.begin() + i);
 			delete view;
-			mWindowMain->RemoveViewPage(i);
+			wxCommandEvent evt(EVT_VM_VIEW_REMOVED);
+			evt.SetInt(i);
+			ProcessEvent(evt);
 			i--;
 		}
 	}
@@ -76,8 +77,9 @@ int ViewManager::AddView(View *view)
 	if(view) {
 		mViewList.push_back(view);
 
-		wxWindow *window = view->CreateWindow(mWindowMain, wxID_ANY);
-		mWindowMain->AddViewPage(window, view->GetName());
+		wxCommandEvent evt(EVT_VM_VIEW_ADDED);
+		evt.SetClientData(view);
+		ProcessEvent(evt);
 
 		return mViewList.size() - 1;
 	}

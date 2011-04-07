@@ -30,8 +30,6 @@ FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
 	mWindowNavigator = new WindowNavigator(splitter, -1, mViewManager);
 	mWindowMain = new WindowMain(splitter, -1, mViewManager);
 
-	mViewManager->SetWindowMain(mWindowMain);
-
 	splitter->SplitVertically(mWindowNavigator, mWindowMain);
 
 	mFile = NULL;
