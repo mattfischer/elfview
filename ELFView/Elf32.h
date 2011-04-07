@@ -26,13 +26,34 @@ typedef struct {
 	Elf32_Half		e_shstrndx;
 } Elf32_Ehdr;
 
-#define SHN_UNDEF		0
-#define	SHN_LORESERVE	0xff00
-#define SHN_LOPROC		0xff00
-#define	SHN_HIPROC		0xff1f
-#define	SHN_ABS			0xfff1
-#define SHN_COMMON		0xfff2
-#define SHN_HIRESERVE	0xffff
+enum {
+	SHN_UNDEF		= 0,
+	SHN_LORESERVE	= 0xff00,
+	SHN_LOPROC		= 0xff00,
+	SHN_HIPROC		= 0xff1f,
+	SHN_ABS			= 0xfff1,
+	SHN_COMMON		= 0xfff2,
+	SHN_HIRESERVE	= 0xffff
+};
+
+enum {
+	SHT_NULL		= 0,
+	SHT_PROGBITS	= 1,
+	SHT_SYMTAB		= 2,
+	SHT_STRTAB		= 3,
+	SHT_RELA		= 4,
+	SHT_HASH		= 5,
+	SHT_DYNAMIC		= 6,
+	SHT_NOTE		= 7,
+	SHT_NOBITS		= 8,
+	SHT_REL			= 9,
+	SHT_SHLIB		= 10,
+	SHT_DYNSYM		= 11,
+	SHT_LOPROC		= 0x70000000,
+	SHT_HIPROC		= 0x7fffffff,
+	SHT_LOUSER		= 0x80000000,
+	SHT_HIUSER		= 0xffffffff
+};
 
 typedef struct {
 	Elf32_Word		sh_name;
@@ -66,4 +87,16 @@ typedef struct {
 	unsigned char	st_other;
 	Elf32_Half		st_shndx;
 } Elf32_Sym;
+
+typedef struct {
+	Elf32_Addr		r_offset;
+	Elf32_Word		r_info;
+} Elf32_Rel;
+
+typedef struct {
+	Elf32_Addr		r_offset;
+	Elf32_Word		r_info;
+	Elf32_Word		r_addend;
+} Elf32_Rela;
+
 #endif

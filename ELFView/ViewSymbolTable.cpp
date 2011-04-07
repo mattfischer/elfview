@@ -42,5 +42,7 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mListCtrl->SetItem(i, 5, wxString::Format("0x%x", sym->st_shndx));
 	}
 
+	delete[] buffer;
+
 	return mListCtrl;
 }

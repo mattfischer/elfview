@@ -4,6 +4,7 @@
 #include "ViewSectionHeaders.h"
 #include "ViewProgramHeaders.h"
 #include "ViewSymbolTable.h"
+#include "ViewRelocations.h"
 
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
@@ -96,6 +97,22 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 	} else if(location == "segment/headers") {
 		return new ViewProgramHeaders(file, location);
 	} else if(location.StartsWith("section/")) {
-		return new ViewSymbolTable(file, location); 
+		int idx;
+	
+		idx = location.Find('/', true);
+		wxString number = location.SubString(idx + 1, location.size());
+		long section;
+		number.ToLong(&section);
+
+		const Elf32_Shdr *header = file->GetSectionHeader(section);
+		switch(header->sh_type) {
+			case SHT_REL:
+			case SHT_RELA:
+				return new ViewRelocations(file, location);
+			case SHT_SYMTAB:
+				return new ViewSymbolTable(file, location); 
+			default:
+				return NULL;
+		}
 	} else return NULL;
 }

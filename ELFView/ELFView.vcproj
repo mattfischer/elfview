@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ViewRelocations.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewSectionHeaders.cpp"
 				>
 			</File>
@@ -230,6 +234,10 @@
 			</File>
 			<File
 				RelativePath=".\ViewProgramHeaders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewRelocations.h"
 				>
 			</File>
 			<File
