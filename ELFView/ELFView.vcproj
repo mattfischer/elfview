@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ViewStringTable.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewSymbolTable.cpp"
 				>
 			</File>
@@ -242,6 +246,10 @@
 			</File>
 			<File
 				RelativePath=".\ViewSectionHeaders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewStringTable.h"
 				>
 			</File>
 			<File

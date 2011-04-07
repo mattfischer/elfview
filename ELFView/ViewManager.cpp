@@ -5,6 +5,7 @@
 #include "ViewProgramHeaders.h"
 #include "ViewSymbolTable.h"
 #include "ViewRelocations.h"
+#include "ViewStringTable.h"
 
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
@@ -110,7 +111,10 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 			case SHT_RELA:
 				return new ViewRelocations(file, location);
 			case SHT_SYMTAB:
+			case SHT_DYNSYM:
 				return new ViewSymbolTable(file, location); 
+			case SHT_STRTAB:
+				return new ViewStringTable(file, location);
 			default:
 				return NULL;
 		}

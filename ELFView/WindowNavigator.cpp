@@ -36,6 +36,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 
 	mSectionList->Append(arrayString);
 
+	mSegmentList->Clear();
 	arrayString.Clear();
 
 	arrayString.Add("View Program Headers");
