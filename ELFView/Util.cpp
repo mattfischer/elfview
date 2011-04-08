@@ -17,6 +17,6 @@ wxString Util::GetSectionTitle(ElfFile *file, int section)
 	if(name == "") {
 		return wxString::Format("%i", section);
 	} else {
-		return wxString::Format("%i (%s)", section, name.c_str());
+		return wxString::Format("%s", name.c_str());
 	}
 }

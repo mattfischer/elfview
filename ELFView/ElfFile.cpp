@@ -62,3 +62,13 @@ wxString ElfFile::GetSectionName(Elf32_Word section)
 {
 	return GetString(mHeader.e_shstrndx, GetSectionHeader(section)->sh_name);
 }
+
+wxString ElfFile::GetSymbolName(Elf32_Word section, Elf32_Word symbol)
+{
+	Elf32_Sym sym;
+
+	const Elf32_Shdr *header = GetSectionHeader(section);
+	Read(&sym, header->sh_offset + symbol * header->sh_entsize, header->sh_entsize);
+
+	return GetString(header->sh_link, sym.st_name);
+}

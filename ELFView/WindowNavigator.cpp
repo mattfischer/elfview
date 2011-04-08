@@ -26,7 +26,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 	mSectionList->Clear();
 
 	arrayString.Add("View Section Headers");
-	for(int i=0;i<mFile->GetHeader()->e_shnum;i++) {
+	for(int i=1;i<mFile->GetHeader()->e_shnum;i++) {
 		arrayString.Add(wxString::Format("%s", Util::GetSectionTitle(mFile, i).c_str()));
 	}
 
@@ -50,7 +50,7 @@ void WindowNavigator::OnSectionSelected(wxCommandEvent &e)
 	if(idx == 0) {
 		mViewManager->GoToLocation(mFile, "section/headers");
 	} else {
-		mViewManager->GoToLocation(mFile, wxString::Format("section/%i", idx - 1));
+		mViewManager->GoToLocation(mFile, wxString::Format("section/%i", idx));
 	}
 }
 

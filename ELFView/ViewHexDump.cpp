@@ -96,12 +96,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 		}
 
 		if(symbol < symbols.size()) {
-			Elf32_Sym sym;
-			const Elf32_Shdr *header = GetFile()->GetSectionHeader(symbols[symbol].section);
-			GetFile()->Read(&sym, header->sh_offset + symbols[symbol].num * header->sh_entsize, header->sh_entsize);
-
-			wxString name = GetFile()->GetString(header->sh_link, sym.st_name);
-			mHtmlListBox->Append("<pre>" + name + ":</pre>");
+			mHtmlListBox->Append("<pre>" + GetFile()->GetSymbolName(symbols[symbol].section, symbols[symbol].num) + ":</pre>");
 		}
 
 		start = end;

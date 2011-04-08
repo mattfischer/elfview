@@ -15,7 +15,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 	wxArrayString arrayString;
 
 	if(GetFile()->GetHeader()->e_shnum > 0) {
-		for(int i=0; i<GetFile()->GetHeader()->e_shnum;i++) {
+		for(int i=1; i<GetFile()->GetHeader()->e_shnum;i++) {
 			const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
 
 			wxString name = GetFile()->GetSectionName(i);

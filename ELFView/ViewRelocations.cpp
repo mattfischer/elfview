@@ -21,10 +21,11 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 	GetFile()->Read(buffer, header->sh_offset, header->sh_size);
 
 	mListCtrl->InsertColumn(0, "Offset");
-	mListCtrl->InsertColumn(1, "Info");
+	mListCtrl->InsertColumn(1, "Symbol");
+	mListCtrl->InsertColumn(2, "Type");
 
 	if(header->sh_type == SHT_RELA) {
-		mListCtrl->InsertColumn(2, "Addend");
+		mListCtrl->InsertColumn(3, "Addend");
 	}
 
 	for(int i=0; i<header->sh_size / header->sh_entsize; i++) {
@@ -32,9 +33,11 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		mListCtrl->InsertItem(i, "");
 		mListCtrl->SetItem(i, 0, wxString::Format("0x%x", rela->r_offset));
-		mListCtrl->SetItem(i, 1, wxString::Format("0x%x", rela->r_info));
+		mListCtrl->SetItem(i, 1, wxString::Format("%s", GetFile()->GetSymbolName(header->sh_link, ELF32_R_SYM(rela->r_info)).c_str()));
+		mListCtrl->SetItem(i, 2, wxString::Format("0x%x", ELF32_R_TYPE(rela->r_info)));
+
 		if(header->sh_type == SHT_RELA) {
-			mListCtrl->SetItem(i, 2, wxString::Format("0x%x", rela->r_addend));
+			mListCtrl->SetItem(i, 3, wxString::Format("0x%x", rela->r_addend));
 		}
 	}
 

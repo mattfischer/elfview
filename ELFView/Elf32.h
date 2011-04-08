@@ -110,6 +110,10 @@ typedef struct {
 	Elf32_Half		st_shndx;
 } Elf32_Sym;
 
+#define ELF32_R_SYM(i) ((i)>>8)
+#define ELF32_R_TYPE(i) ((unsigned char)(i))
+#define ELF32_R_INFO(s,t) (((s)<<8) + (unsigned char)(t))
+
 typedef struct {
 	Elf32_Addr		r_offset;
 	Elf32_Word		r_info;

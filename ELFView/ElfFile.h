@@ -19,6 +19,7 @@ public:
 	const Elf32_Phdr *GetProgramHeader(Elf32_Word segment);
 
 	wxString GetSectionName(Elf32_Word section);
+	wxString GetSymbolName(Elf32_Word section, Elf32_Word symbol);
 	wxString GetString(Elf32_Word stringTable, Elf32_Word offset);
 
 protected:
