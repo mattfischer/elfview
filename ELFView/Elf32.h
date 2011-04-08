@@ -79,6 +79,28 @@ typedef struct {
 	Elf32_Word		p_align;
 } Elf32_Phdr;
 
+#define ELF32_ST_BIND(i) ((i)>>4)
+#define ELF32_ST_TYPE(i) ((i)&0xf)
+#define ELF32_ST_INFO(b,t) (((b)<<4) + ((t)&0xf))
+
+enum {
+	STB_LOCAL	= 0,
+	STB_GLOBAL	= 1,
+	STB_WEAK	= 2,
+	STB_LOPROC	= 13,
+	STB_HIPROC	= 15
+};
+
+enum {
+	STT_NOTYPE	= 0,
+	STT_OBJECT	= 1,
+	STT_FUNC	= 2,
+	STT_SECTION	= 3,
+	STT_FILE	= 4,
+	STT_LOPROC	= 13,
+	STT_HIPROC	= 15
+};
+
 typedef struct {
 	Elf32_Word		st_name;
 	Elf32_Addr		st_value;

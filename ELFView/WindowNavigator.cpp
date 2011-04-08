@@ -1,5 +1,7 @@
 #include "WindowNavigator.h"
 
+#include "Util.h"
+
 enum {
 	ID_Section_List,
 	ID_Segment_List
@@ -25,13 +27,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 
 	arrayString.Add("View Section Headers");
 	for(int i=0;i<mFile->GetHeader()->e_shnum;i++) {
-		wxString name = mFile->GetSectionName(i);
-
-		if(name == "") {
-			arrayString.Add(wxString::Format("%i", i));
-		} else {
-			arrayString.Add(wxString::Format("%i (%s)", i, name.c_str()));
-		}
+		arrayString.Add(wxString::Format("%s", Util::GetSectionTitle(mFile, i).c_str()));
 	}
 
 	mSectionList->Append(arrayString);

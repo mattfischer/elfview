@@ -1,14 +1,11 @@
 #include "ViewRelocations.h"
 
+#include "Util.h"
+
 ViewRelocations::ViewRelocations(ElfFile *file, wxString location)
 : View(file, location)
 {
-	int idx;
-	
-	idx = location.Find('/', true);
-	wxString number = location.SubString(idx + 1, location.size());
-	number.ToLong(&mSection);
-
+	mSection = Util::GetSectionNumber(location);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 

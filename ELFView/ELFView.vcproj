@@ -37,6 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include&quot;;&quot;C:\wxWidgets-2.8.12\lib\vc_lib\mswd&quot;"
 				RuntimeLibrary="3"
 				DebugInformationFormat="3"
@@ -163,11 +164,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Util.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\View.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ViewElfHeader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewHexDump.cpp"
 				>
 			</File>
 			<File
@@ -225,11 +234,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Util.h"
+				>
+			</File>
+			<File
 				RelativePath=".\View.h"
 				>
 			</File>
 			<File
 				RelativePath=".\ViewElfHeader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewHexDump.h"
 				>
 			</File>
 			<File

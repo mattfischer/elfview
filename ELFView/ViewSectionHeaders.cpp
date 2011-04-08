@@ -1,6 +1,6 @@
 #include "ViewSectionHeaders.h"
 
-extern wxWindow *gWindowMain;
+#include "Util.h"
 
 ViewSectionHeaders::ViewSectionHeaders(ElfFile *file, wxString location)
 : View(file, location)
@@ -19,12 +19,8 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
 
 			wxString name = GetFile()->GetSectionName(i);
-
-			if(name == "") {
-				arrayString.Add(wxString::Format("<b>Section %i</b>", i));
-			} else {
-				arrayString.Add(wxString::Format("<b>Section %i (%s)</b>", i, name.c_str()));
-			}
+			wxString title = Util::GetSectionTitle(GetFile(), i);
+			arrayString.Add(wxString::Format("<b>Section %s</b>", title.c_str()));
 
 			arrayString.Add(wxString::Format("Name: %s", name.c_str()));
 			arrayString.Add(wxString::Format("Type: 0x%x", header->sh_type));

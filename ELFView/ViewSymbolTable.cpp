@@ -1,14 +1,11 @@
 #include "ViewSymbolTable.h"
 
+#include "Util.h"
+
 ViewSymbolTable::ViewSymbolTable(ElfFile *file, wxString location)
 : View(file, location)
 {
-	int idx;
-	
-	idx = location.Find('/', true);
-	wxString number = location.SubString(idx + 1, location.size());
-	number.ToLong(&mSection);
-
+	mSection = Util::GetSectionNumber(location);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 
@@ -26,8 +23,8 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mListCtrl->InsertColumn(0, "Name");
 	mListCtrl->InsertColumn(1, "Value");
 	mListCtrl->InsertColumn(2, "Size");
-	mListCtrl->InsertColumn(3, "Info");
-	mListCtrl->InsertColumn(4, "Other");
+	mListCtrl->InsertColumn(3, "Bind");
+	mListCtrl->InsertColumn(4, "Type");
 	mListCtrl->InsertColumn(5, "Section");
 
 	for(int i=0; i<header->sh_size / header->sh_entsize; i++) {
@@ -37,8 +34,8 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mListCtrl->SetItem(i, 0, GetFile()->GetString(header->sh_link, sym->st_name));
 		mListCtrl->SetItem(i, 1, wxString::Format("0x%x", sym->st_value));
 		mListCtrl->SetItem(i, 2, wxString::Format("0x%x", sym->st_size));
-		mListCtrl->SetItem(i, 3, wxString::Format("0x%x", sym->st_info));
-		mListCtrl->SetItem(i, 4, wxString::Format("0x%x", sym->st_other));
+		mListCtrl->SetItem(i, 3, wxString::Format("0x%x", ELF32_ST_BIND(sym->st_info)));
+		mListCtrl->SetItem(i, 4, wxString::Format("0x%x", ELF32_ST_TYPE(sym->st_info)));
 		mListCtrl->SetItem(i, 5, wxString::Format("0x%x", sym->st_shndx));
 	}
 

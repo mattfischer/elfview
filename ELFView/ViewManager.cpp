@@ -6,6 +6,7 @@
 #include "ViewSymbolTable.h"
 #include "ViewRelocations.h"
 #include "ViewStringTable.h"
+#include "ViewHexDump.h"
 
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
@@ -116,7 +117,7 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 			case SHT_STRTAB:
 				return new ViewStringTable(file, location);
 			default:
-				return NULL;
+				return new ViewHexDump(file, location);
 		}
 	} else return NULL;
 }
