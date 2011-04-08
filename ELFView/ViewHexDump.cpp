@@ -20,6 +20,7 @@ struct Symbol {
 wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
+	wxArrayString arrayString;
 
 	std::vector<Symbol> symbols;
 
@@ -57,7 +58,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 	}
 
 	const Elf32_Shdr *header = GetFile()->GetSectionHeader(mSection);
-	char *buffer = new char[header->sh_size];
+	unsigned char *buffer = new unsigned char[header->sh_size];
 	GetFile()->Read(buffer, header->sh_offset, header->sh_size);
 
 	int start = 0;
@@ -79,7 +80,15 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 				hex += wxString::Format("0x%02x ", (int)c);
 
-				if(c >= ' ' && c < 127) {
+				if(c == '>') {
+					ascii += "&gt;";
+				} else if(c == '<') {
+					ascii += "&lt;";
+				} else if(c == ' ') {
+					ascii += "&nbsp;";
+				} else if(c == '&') {
+					ascii += "&amp;";
+				} else if(c > ' ' && c < 127) {
 					ascii += c;
 				} else {
 					ascii += '.';
@@ -92,17 +101,20 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 				hex += "     ";
 			}
 
-			mHtmlListBox->Append("<pre>" + hex + "        " + ascii + "</pre>");
+			
+			arrayString.Add("<pre>" + hex + "        " + ascii + "</pre>");
 		}
 
 		if(symbol < symbols.size()) {
-			mHtmlListBox->Append("<pre>" + GetFile()->GetSymbolName(symbols[symbol].section, symbols[symbol].num) + ":</pre>");
+			arrayString.Add("<pre>" + GetFile()->GetSymbolName(symbols[symbol].section, symbols[symbol].num) + ":</pre>");
 		}
 
 		start = end;
 	}
 
 	delete[] buffer;
+
+	mHtmlListBox->Append(arrayString);
 
 	return mHtmlListBox;
 }
