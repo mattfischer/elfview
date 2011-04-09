@@ -18,6 +18,26 @@ WindowNavigator::WindowNavigator(wxWindow *parent, wxWindowID id, ViewManager *v
 	AddPage(mSegmentList, "Segments");
 }
 
+static wxString GetPhdrTypeDescription(int type)
+{
+	switch(type) {
+		case PT_LOAD:
+			return "LOAD";
+		case PT_DYNAMIC:
+			return "DYNAMIC";
+		case PT_INTERP:
+			return "INTERP";
+		case PT_NOTE:
+			return "NOTE";
+		case PT_SHLIB:
+			return "SHLIB";
+		case PT_PHDR:
+			return "PHDR";
+		default:
+			return "";
+	}
+}
+
 void WindowNavigator::SetFile(ElfFile *file)
 {
 	mFile = file;
@@ -37,7 +57,14 @@ void WindowNavigator::SetFile(ElfFile *file)
 
 	arrayString.Add("View Program Headers");
 	for(int i=0; i<mFile->GetHeader()->e_phnum;i++) {
-		arrayString.Add(wxString::Format("%i", i));
+		const Elf32_Phdr *header = mFile->GetProgramHeader(i);
+		wxString desc = GetPhdrTypeDescription(header->p_type);
+
+		if(desc == "") {
+			arrayString.Add(wxString::Format("%i", i));
+		} else {
+			arrayString.Add(wxString::Format("%i (%s)", i, desc.c_str()));
+		}
 	}
 
 	mSegmentList->Append(arrayString);

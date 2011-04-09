@@ -15,8 +15,5 @@ protected:
 	long mSection;
 
 	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
-	wxString GetBindDescription(int bind);
-	wxString GetTypeDescription(int type);
-	wxString GetSectionDescription(int section);
 };
 #endif

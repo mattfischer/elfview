@@ -7,6 +7,9 @@
 #include "ViewRelocations.h"
 #include "ViewStringTable.h"
 #include "ViewHexDump.h"
+#include "ViewDynamic.h"
+
+#include "Util.h"
 
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
@@ -99,14 +102,9 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 	} else if(location == "segment/headers") {
 		return new ViewProgramHeaders(file, location);
 	} else if(location.StartsWith("section/")) {
-		int idx;
-	
-		idx = location.Find('/', true);
-		wxString number = location.SubString(idx + 1, location.size());
-		long section;
-		number.ToLong(&section);
-
+		long section = Util::GetSectionNumber(location);
 		const Elf32_Shdr *header = file->GetSectionHeader(section);
+
 		switch(header->sh_type) {
 			case SHT_REL:
 			case SHT_RELA:
@@ -116,6 +114,18 @@ View *ViewManager::CreateView(ElfFile *file, wxString location)
 				return new ViewSymbolTable(file, location); 
 			case SHT_STRTAB:
 				return new ViewStringTable(file, location);
+			case SHT_DYNAMIC:
+				return new ViewDynamic(file, location);
+			default:
+				return new ViewHexDump(file, location);
+		}
+	} else if(location.StartsWith("segment/")) {
+		long segment = Util::GetSectionNumber(location);
+		const Elf32_Phdr *header = file->GetProgramHeader(segment);
+
+		switch(header->p_type) {
+			case PT_DYNAMIC:
+				return new ViewDynamic(file, location);
 			default:
 				return new ViewHexDump(file, location);
 		}

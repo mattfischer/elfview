@@ -18,6 +18,21 @@ ElfFile::ElfFile(wxString &filename)
 	} else {
 		mSectionHeaders = NULL;
 	}
+
+	mDynamicSection = NULL;
+	mDynamicSize = 0;
+	if(mHeader.e_phnum > 0) {
+		for(int i=0; i<mHeader.e_phnum; i++) {
+			const Elf32_Phdr *header = GetProgramHeader(i);
+
+			if(header->p_type == PT_DYNAMIC) {
+				mDynamicSection = new char[header->p_filesz];
+				mDynamicSize = header->p_filesz;
+				Read(mDynamicSection, header->p_offset, header->p_filesz);
+				break;
+			}
+		}
+	}
 }
 
 size_t ElfFile::Read(void *buffer, wxFileOffset offset, size_t size)
@@ -71,4 +86,34 @@ wxString ElfFile::GetSymbolName(Elf32_Word section, Elf32_Word symbol)
 	Read(&sym, header->sh_offset + symbol * header->sh_entsize, header->sh_entsize);
 
 	return GetString(header->sh_link, sym.st_name);
+}
+
+const Elf32_Dyn *ElfFile::GetDynamicEntry(Elf32_Sword tag)
+{
+	if(mDynamicSection == NULL) {
+		return NULL;
+	}
+
+	for(int i=0; i<mDynamicSize / sizeof(Elf32_Dyn); i++) {
+		Elf32_Dyn *dyn = (Elf32_Dyn*)(mDynamicSection + i * sizeof(Elf32_Dyn));
+
+		if(dyn->d_tag == tag) {
+			return dyn;
+		}
+	}
+
+	return NULL;
+}
+
+int ElfFile::GetContainingProgramHeader(Elf32_Addr addr)
+{
+	for(int i=0; i<mHeader.e_phnum; i++) {
+		const Elf32_Phdr *header = GetProgramHeader(i);
+
+		if(addr >= header->p_vaddr && addr < header->p_vaddr + header->p_memsz) {
+			return i;
+		}
+	}
+
+	return 0;
 }

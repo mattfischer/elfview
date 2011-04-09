@@ -9,6 +9,52 @@ ViewSymbolTable::ViewSymbolTable(ElfFile *file, wxString location)
 	SetName(GetFile()->GetSectionName(mSection));
 }
 
+static wxString GetBindDescription(int bind)
+{
+	switch(bind) {
+		case STB_LOCAL:
+			return "Local";
+		case STB_GLOBAL:
+			return "Global";
+		case STB_WEAK:
+			return "Weak";
+		default:
+			return "(Unknown)";
+	}
+}
+
+static wxString GetTypeDescription(int type)
+{
+	switch(type) {
+		case STT_NOTYPE:
+			return "None";
+		case STT_OBJECT:
+			return "Object";
+		case STT_FUNC:
+			return "Function";
+		case STT_SECTION:
+			return "Section";
+		case STT_FILE:
+			return "File";
+		default:
+			return "(Unknown)";
+	}
+}
+
+static wxString GetSectionDescription(int section, ElfFile *file)
+{
+	switch(section) {
+		case SHN_UNDEF:
+			return "(Undefined)";
+		case SHN_ABS:
+			return "(Absolute)";
+		case SHN_COMMON:
+			return "(Common)";
+		default:
+			return Util::GetSectionTitle(file, section);
+	}
+}
+
 wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mListCtrl = new wxListCtrl(parent, id);
@@ -36,56 +82,10 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mListCtrl->SetItem(i-1, 2, wxString::Format("0x%x", sym->st_size));
 		mListCtrl->SetItem(i-1, 3, wxString::Format("%s", GetBindDescription(ELF32_ST_BIND(sym->st_info)).c_str()));
 		mListCtrl->SetItem(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()));
-		mListCtrl->SetItem(i-1, 5, wxString::Format("%s", GetSectionDescription(sym->st_shndx).c_str()));
+		mListCtrl->SetItem(i-1, 5, wxString::Format("%s", GetSectionDescription(sym->st_shndx, GetFile()).c_str()));
 	}
 
 	delete[] buffer;
 
 	return mListCtrl;
-}
-
-wxString ViewSymbolTable::GetBindDescription(int bind)
-{
-	switch(bind) {
-		case STB_LOCAL:
-			return "Local";
-		case STB_GLOBAL:
-			return "Global";
-		case STB_WEAK:
-			return "Weak";
-		default:
-			return "(Unknown)";
-	}
-}
-
-wxString ViewSymbolTable::GetTypeDescription(int type)
-{
-	switch(type) {
-		case STT_NOTYPE:
-			return "None";
-		case STT_OBJECT:
-			return "Object";
-		case STT_FUNC:
-			return "Function";
-		case STT_SECTION:
-			return "Section";
-		case STT_FILE:
-			return "File";
-		default:
-			return "(Unknown)";
-	}
-}
-
-wxString ViewSymbolTable::GetSectionDescription(int section)
-{
-	switch(section) {
-		case SHN_UNDEF:
-			return "(Undefined)";
-		case SHN_ABS:
-			return "(Absolute)";
-		case SHN_COMMON:
-			return "(Common)";
-		default:
-			return Util::GetSectionTitle(GetFile(), section);
-	}
 }

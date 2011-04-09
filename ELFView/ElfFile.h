@@ -21,6 +21,8 @@ public:
 	wxString GetSectionName(Elf32_Word section);
 	wxString GetSymbolName(Elf32_Word section, Elf32_Word symbol);
 	wxString GetString(Elf32_Word stringTable, Elf32_Word offset);
+	const Elf32_Dyn *GetDynamicEntry(Elf32_Sword tag);
+	int GetContainingProgramHeader(Elf32_Addr addr);
 
 protected:
 	wxFile mFile;
@@ -28,6 +30,8 @@ protected:
 	Elf32_Ehdr mHeader;
 	char *mSectionHeaders;
 	char *mProgramHeaders;
+	char *mDynamicSection;
+	int mDynamicSize;
 
 	std::map<int, char*> mStringTables;
 };

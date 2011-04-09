@@ -14,6 +14,11 @@ protected:
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
 
 	int mSection;
+	int mBase;
+	int mOffset;
+	int mFileSize;
+	int mSize;
+	bool mRel;
 	wxSimpleHtmlListBox *mHtmlListBox;
 };
 #endif

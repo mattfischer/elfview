@@ -172,6 +172,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ViewDynamic.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ViewElfHeader.cpp"
 				>
 			</File>
@@ -239,6 +243,10 @@
 			</File>
 			<File
 				RelativePath=".\View.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewDynamic.h"
 				>
 			</File>
 			<File

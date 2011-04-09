@@ -9,6 +9,16 @@ typedef unsigned int Elf32_Word;
 
 #define EI_NIDENT	16
 
+enum {
+	ET_NONE		= 0,
+	ET_REL		= 1,
+	ET_EXEC		= 2,
+	ET_DYN		= 3,
+	ET_CORE		= 4,
+	ET_LOPROC	= 0xff00,
+	ET_HIPROC	= 0xffff
+};
+
 typedef struct {
 	unsigned char	e_nident[EI_NIDENT];
 	Elf32_Half		e_type;
@@ -68,17 +78,6 @@ typedef struct {
 	Elf32_Word		sh_entsize;
 } Elf32_Shdr;
 
-typedef struct {
-	Elf32_Word		p_type;
-	Elf32_Off		p_offset;
-	Elf32_Addr		p_vaddr;
-	Elf32_Addr		p_paddr;
-	Elf32_Word		p_filesz;
-	Elf32_Word		p_memsz;
-	Elf32_Word		p_flags;
-	Elf32_Word		p_align;
-} Elf32_Phdr;
-
 #define ELF32_ST_BIND(i) ((i)>>4)
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 #define ELF32_ST_INFO(b,t) (((b)<<4) + ((t)&0xf))
@@ -124,5 +123,65 @@ typedef struct {
 	Elf32_Word		r_info;
 	Elf32_Word		r_addend;
 } Elf32_Rela;
+
+enum {
+	PT_NULL		= 0,
+	PT_LOAD		= 1,
+	PT_DYNAMIC	= 2,
+	PT_INTERP	= 3,
+	PT_NOTE		= 4,
+	PT_SHLIB	= 5,
+	PT_PHDR		= 6,
+	PT_LOPROC	= 0x70000000,
+	PT_HIPROC	= 0x7fffffff
+};
+
+typedef struct {
+	Elf32_Word		p_type;
+	Elf32_Off		p_offset;
+	Elf32_Addr		p_vaddr;
+	Elf32_Addr		p_paddr;
+	Elf32_Word		p_filesz;
+	Elf32_Word		p_memsz;
+	Elf32_Word		p_flags;
+	Elf32_Word		p_align;
+} Elf32_Phdr;
+
+enum {
+	DT_NULL		= 0,
+	DT_NEEDED	= 1,
+	DT_PLTRELSZ	= 2,
+	DT_PLTGOT	= 3,
+	DT_HASH		= 4,
+	DT_STRTAB	= 5,
+	DT_SYMTAB	= 6,
+	DT_RELA		= 7,
+	DT_RELASZ	= 8,
+	DT_RELAENT	= 9,
+	DT_STRSZ	= 10,
+	DT_SYMENT	= 11,
+	DT_INIT		= 12,
+	DT_FINI		= 13,
+	DT_SONAME	= 14,
+	DT_RPATH	= 15,
+	DT_SYMBOLIC	= 16,
+	DT_REL		= 17,
+	DT_RELSZ	= 18,
+	DT_RELENT	= 19,
+	DT_PLTREL	= 20,
+	DT_DEBUG	= 21,
+	DT_TEXTREL	= 22,
+	DT_JMPREL	= 23,
+	DT_LOPROC	= 0x70000000,
+	DT_HIPROC	= 0x7fffffff
+};
+
+typedef struct {
+	Elf32_Sword	d_tag;
+	union {
+		Elf32_Word	d_val;
+		Elf32_Addr	d_ptr;
+	} d_un;
+} Elf32_Dyn;
 
 #endif
