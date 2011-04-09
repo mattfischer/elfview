@@ -42,10 +42,13 @@ void FrameMain::OnFileOpen(wxCommandEvent &e)
 	int result = dialog->ShowModal();
 
 	if(result == wxID_OK) {
-		mFile = new ElfFile(dialog->GetPath());
+		if(mFile != NULL) {
+			mViewManager->CloseAllViews(mFile);
+			delete mFile;
+		}
 
-		mWindowMain->SetFile(mFile);
-		mWindowNavigator->SetFile(mFile);
+		mFile = new ElfFile(dialog->GetPath());
+		mWindowNavigator->SetFile(mFile);		
 	}
 }
 

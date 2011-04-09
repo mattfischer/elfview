@@ -1,13 +1,12 @@
 #ifndef WINDOW_NAVIGATOR_H
 #define WINDOW_NAVIGATOR_H
 
-#include <wx/notebook.h>
-#include <wx/listbox.h>
+#include <wx/treectrl.h>
 
 #include "ElfFile.h"
 #include "ViewManager.h"
 
-class WindowNavigator : public wxNotebook
+class WindowNavigator : public wxTreeCtrl
 {
 public:
 	WindowNavigator(wxWindow *parent, wxWindowID id, ViewManager *viewManager);
@@ -17,11 +16,8 @@ public:
 protected:
 	ElfFile *mFile;
 	ViewManager *mViewManager;
-	wxListBox *mSectionList;
-	wxListBox *mSegmentList;
-
-	void OnSectionSelected(wxCommandEvent &e);
-	void OnSegmentSelected(wxCommandEvent &e);
+	
+	void OnItemActivated(wxTreeEvent &e);
 
 	DECLARE_EVENT_TABLE();
 };

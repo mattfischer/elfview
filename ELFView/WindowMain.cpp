@@ -16,21 +16,7 @@ WindowMain::WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager
 	mViewManager->Connect(EVT_VM_VIEW_REMOVED, (wxObjectEventFunction)&WindowMain::OnViewRemoved, NULL, this);
 	mViewManager->Connect(EVT_VM_CURRENT_VIEW_CHANGED, (wxObjectEventFunction)&WindowMain::OnCurrentViewChanged, NULL, this);
 
-	mFile = NULL;
 	mCloseTab = -1;
-}
-
-void WindowMain::SetFile(ElfFile *file)
-{
-	if(mFile != NULL) {
-		mViewManager->CloseAllViews(mFile);
-		delete mFile;
-	}
-	mFile = file;
-	
-	mViewManager->AddLocation(file, "header");
-	mViewManager->AddLocation(file, "section/headers");
-	mViewManager->AddLocation(file, "segment/headers");
 }
 
 void WindowMain::OnViewAdded(wxCommandEvent &e)

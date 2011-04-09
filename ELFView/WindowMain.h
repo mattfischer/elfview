@@ -26,7 +26,6 @@ protected:
 	void OnMenu(wxCommandEvent &e);
 
 	ViewManager *mViewManager;
-	ElfFile *mFile;
 	int mCloseTab;
 
 	DECLARE_EVENT_TABLE();

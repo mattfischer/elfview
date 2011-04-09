@@ -2,20 +2,16 @@
 
 #include "Util.h"
 
-enum {
-	ID_Section_List,
-	ID_Segment_List
+struct ItemData : public wxTreeItemData {
+	wxString path;
+
+	ItemData(wxString p) : path(p) {}
 };
 
 WindowNavigator::WindowNavigator(wxWindow *parent, wxWindowID id, ViewManager *viewManager)
-: wxNotebook(parent, id)
+: wxTreeCtrl(parent, id, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_HIDE_ROOT)
 {
-	mSectionList = new wxListBox(this, ID_Section_List);
-	mSegmentList = new wxListBox(this, ID_Segment_List);
 	mViewManager = viewManager;
-
-	AddPage(mSectionList, "Sections");
-	AddPage(mSegmentList, "Segments");
 }
 
 static wxString GetPhdrTypeDescription(int type)
@@ -41,58 +37,44 @@ static wxString GetPhdrTypeDescription(int type)
 void WindowNavigator::SetFile(ElfFile *file)
 {
 	mFile = file;
-	
-	wxArrayString arrayString;
-	mSectionList->Clear();
 
-	arrayString.Add("View Section Headers");
+	DeleteAllItems();
+	wxTreeItemId root = AddRoot("");
+
+	AppendItem(root, "ELF Header", -1, -1, new ItemData("header"));
+
+	wxTreeItemId sections = AppendItem(root, "Sections");
+	AppendItem(sections, "Section Headers", -1, -1, new ItemData("section/headers"));
 	for(int i=1;i<mFile->GetHeader()->e_shnum;i++) {
-		arrayString.Add(wxString::Format("%s", Util::GetSectionTitle(mFile, i).c_str()));
+		AppendItem(sections, Util::GetSectionTitle(mFile, i), -1, -1, new ItemData(wxString::Format("section/%i", i)));
 	}
 
-	mSectionList->Append(arrayString);
-
-	mSegmentList->Clear();
-	arrayString.Clear();
-
-	arrayString.Add("View Program Headers");
-	for(int i=0; i<mFile->GetHeader()->e_phnum;i++) {
+	wxTreeItemId segments = AppendItem(root, "Segments");
+	AppendItem(segments, "Program Headers", -1, -1, new ItemData("segment/headers"));
+	for(int i=1;i<mFile->GetHeader()->e_phnum;i++) {
 		const Elf32_Phdr *header = mFile->GetProgramHeader(i);
+		wxString title;
 		wxString desc = GetPhdrTypeDescription(header->p_type);
-
 		if(desc == "") {
-			arrayString.Add(wxString::Format("%i", i));
+			title = wxString::Format("%i", i);
 		} else {
-			arrayString.Add(wxString::Format("%i (%s)", i, desc.c_str()));
+			title = wxString::Format("%i (%s)", i, desc.c_str());
 		}
+		AppendItem(segments, title, -1, -1, new ItemData(wxString::Format("segment/%i", i)));
 	}
-
-	mSegmentList->Append(arrayString);
 }
 
-void WindowNavigator::OnSectionSelected(wxCommandEvent &e)
+void WindowNavigator::OnItemActivated(wxTreeEvent &e)
 {
-	int idx = e.GetInt();
+	wxTreeItemId id = e.GetItem();
 
-	if(idx == 0) {
-		mViewManager->GoToLocation(mFile, "section/headers");
-	} else {
-		mViewManager->GoToLocation(mFile, wxString::Format("section/%i", idx));
+	ItemData *data = (ItemData*)GetItemData(id);
+
+	if(data != NULL && data->path != "") {
+		mViewManager->GoToLocation(mFile, data->path);
 	}
 }
 
-void WindowNavigator::OnSegmentSelected(wxCommandEvent &e)
-{
-	int idx = e.GetInt();
-
-	if(idx == 0) {
-		mViewManager->GoToLocation(mFile, "segment/headers");
-	} else {
-		mViewManager->GoToLocation(mFile, wxString::Format("segment/%i", idx - 1));
-	}
-}
-
-BEGIN_EVENT_TABLE(WindowNavigator, wxNotebook)
-	EVT_LISTBOX_DCLICK(ID_Section_List, WindowNavigator::OnSectionSelected)
-	EVT_LISTBOX_DCLICK(ID_Segment_List, WindowNavigator::OnSegmentSelected)
+BEGIN_EVENT_TABLE(WindowNavigator, wxTreeCtrl)
+	EVT_TREE_ITEM_ACTIVATED(wxID_ANY, WindowNavigator::OnItemActivated)
 END_EVENT_TABLE()
