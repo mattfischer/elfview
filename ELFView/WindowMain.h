@@ -22,7 +22,13 @@ protected:
 	void OnViewRemoved(wxCommandEvent &e);
 	void OnCurrentViewChanged(wxCommandEvent &e);
 
+	void OnRightUp(wxMouseEvent &e);
+	void OnMenu(wxCommandEvent &e);
+
 	ViewManager *mViewManager;
 	ElfFile *mFile;
+	int mCloseTab;
+
+	DECLARE_EVENT_TABLE();
 };
 #endif

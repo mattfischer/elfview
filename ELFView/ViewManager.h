@@ -22,6 +22,7 @@ public:
 
 	void GoToLocation(ElfFile *file, wxString location);
 	int AddLocation(ElfFile *file, wxString location);
+	void CloseView(int view);
 	void CloseAllViews(ElfFile *file);
 
 protected:

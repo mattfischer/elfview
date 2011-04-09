@@ -48,16 +48,22 @@ int ViewManager::AddLocation(ElfFile *file, wxString location)
 	return idx;
 }
 
+void ViewManager::CloseView(int view)
+{
+	View *ptr = mViewList[view];
+	mViewList.erase(mViewList.begin() + view);
+	delete ptr;
+	wxCommandEvent evt(EVT_VM_VIEW_REMOVED);
+	evt.SetInt(view);
+	ProcessEvent(evt);
+}
+
 void ViewManager::CloseAllViews(ElfFile *file)
 {
 	for(int i=0; i<mViewList.size(); i++) {
 		View *view = mViewList[i];
 		if(view->GetFile() == file) {
-			mViewList.erase(mViewList.begin() + i);
-			delete view;
-			wxCommandEvent evt(EVT_VM_VIEW_REMOVED);
-			evt.SetInt(i);
-			ProcessEvent(evt);
+			CloseView(i);
 			i--;
 		}
 	}
