@@ -3,7 +3,7 @@
 
 #include "View.h"
 
-#include <wx/listctrl.h>
+#include "LinkTable.h"
 
 class ViewSymbolTable : public View
 {
@@ -11,7 +11,7 @@ public:
 	ViewSymbolTable(ElfFile *file, wxString location);
 
 protected:
-	wxListCtrl *mListCtrl;
+	LinkTable *mTable;
 	long mSection;
 
 	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);

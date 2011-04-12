@@ -4,7 +4,7 @@
 #include "ElfFile.h"
 #include "View.h"
 
-#include <wx/listctrl.h>
+#include "LinkTable.h"
 
 class ViewRelocations : public View
 {
@@ -12,7 +12,7 @@ public:
 	ViewRelocations(ElfFile *file, wxString location);
 
 protected:
-	wxListCtrl *mListCtrl;
+	LinkTable *mTable;
 	long mSection;
 	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
 };

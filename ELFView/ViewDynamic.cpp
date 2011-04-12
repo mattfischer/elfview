@@ -2,6 +2,9 @@
 
 #include "Util.h"
 
+#include <wx/msgdlg.h>
+#include <wx/dcclient.h>
+
 ViewDynamic::ViewDynamic(ElfFile *file, wxString location)
 : View(file, location)
 {
@@ -76,10 +79,14 @@ static wxString GetTagDescription(int tag)
 
 wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mListCtrl = new wxListCtrl(parent, id);
+	mTable = new LinkTable(parent, id);
 
-	mListCtrl->SetSingleStyle(wxLC_REPORT);
+	int numEntries = mSize / sizeof(Elf32_Dyn);
 
+	mTable->Setup(numEntries, 2, GetFile());
+	mTable->SetColumnLabel(0, "Tag");
+	mTable->SetColumnLabel(1, "Value");
+	
 	char *buffer = new char[mSize];
 	GetFile()->Read(buffer, mOffset, mSize);
 
@@ -91,15 +98,11 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 	int offset = phdr->p_offset + strtab - phdr->p_vaddr;
 	char *stringTable = new char[strsz];
 	GetFile()->Read(stringTable, offset, strsz);
-
-	mListCtrl->InsertColumn(0, "Tag");
-	mListCtrl->InsertColumn(1, "Value");
 	
-	for(int i=0; i<mSize / sizeof(Elf32_Dyn); i++) {
+	for(int i=0; i<numEntries; i++) {
 		Elf32_Dyn *dyn = (Elf32_Dyn*)(buffer + i * sizeof(Elf32_Dyn));
 
-		mListCtrl->InsertItem(i, "");
-		mListCtrl->SetItem(i, 0, GetTagDescription(dyn->d_tag));
+		mTable->SetCell(i, 0, GetTagDescription(dyn->d_tag));
 
 		wxString value;
 		switch(dyn->d_tag) {
@@ -110,11 +113,11 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 			default:
 				value = wxString::Format("0x%x", dyn->d_un.d_val);
 		}
-		mListCtrl->SetItem(i, 1, value);
+		mTable->SetCell(i, 1, value);
 	}
 
 	delete[] buffer;
 	delete[] stringTable;
 
-	return mListCtrl;
+	return mTable;
 }

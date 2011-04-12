@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.8.12\include&quot;;&quot;C:\wxWidgets-2.8.12\lib\vc_lib\mswd&quot;"
+				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.9.1\include&quot;;&quot;C:\wxWidgets-2.9.1\lib\vc_lib\mswud&quot;"
 				RuntimeLibrary="3"
 				DebugInformationFormat="3"
 			/>
@@ -53,8 +53,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_html.lib comctl32.lib rpcrt4.lib"
-				AdditionalLibraryDirectories="&quot;C:\wxWidgets-2.8.12\lib\vc_lib&quot;"
+				AdditionalDependencies="wxbase29ud.lib wxmsw29ud_core.lib wxmsw29ud_html.lib wxmsw29ud_adv.lib comctl32.lib rpcrt4.lib"
+				AdditionalLibraryDirectories="&quot;C:\wxWidgets-2.9.1\lib\vc_lib&quot;"
 				GenerateDebugInformation="true"
 			/>
 			<Tool
@@ -164,6 +164,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LinkTable.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Util.cpp"
 				>
 			</File>
@@ -235,6 +239,10 @@
 			</File>
 			<File
 				RelativePath=".\FrameMain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LinkTable.h"
 				>
 			</File>
 			<File

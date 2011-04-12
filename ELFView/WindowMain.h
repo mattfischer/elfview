@@ -4,6 +4,7 @@
 #include <wx/notebook.h>
 #include <wx/htmllbox.h>
 #include <wx/list.h>
+#include <wx/hyperlink.h>
 
 #include "ElfFile.h"
 #include "View.h"
@@ -23,7 +24,8 @@ protected:
 	void OnCurrentViewChanged(wxCommandEvent &e);
 
 	void OnRightUp(wxMouseEvent &e);
-	void OnMenu(wxCommandEvent &e);
+	void OnMenu(wxCommandEvent &e);	
+	void OnLink(wxHyperlinkEvent &e);
 
 	ViewManager *mViewManager;
 	int mCloseTab;

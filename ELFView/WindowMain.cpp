@@ -59,7 +59,13 @@ void WindowMain::OnMenu(wxCommandEvent &e)
 	mViewManager->CloseView(mCloseTab);
 }
 
+void WindowMain::OnLink(wxHyperlinkEvent &e)
+{
+	mViewManager->GoToLocation((ElfFile*)e.GetClientData(), e.GetURL());
+}
+
 BEGIN_EVENT_TABLE(WindowMain, wxNotebook)
 	EVT_RIGHT_UP(WindowMain::OnRightUp)
 	EVT_MENU(wxID_ANY, WindowMain::OnMenu)
+	EVT_HYPERLINK(wxID_ANY, WindowMain::OnLink)
 END_EVENT_TABLE()
