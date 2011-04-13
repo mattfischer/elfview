@@ -9,7 +9,7 @@ class LinkTable : public wxGrid
 public:
 	LinkTable(wxWindow *parent, wxWindowID id);
 
-	void Setup(int rows, int cols, void *clientData);
+	void Setup(int rows, int cols);
 	void SetColumnLabel(int col, wxString label);
 	void SetCell(int row, int col, wxString text, wxString target = "");
 
@@ -17,7 +17,6 @@ protected:
 	wxArrayString mTargets;
 	int mNumCols;
 	wxGridCellCoords mDownCoords;
-	void *mClientData;
 
 	void OnMotion(wxMouseEvent &e);
 	void OnLeft(wxMouseEvent &e);

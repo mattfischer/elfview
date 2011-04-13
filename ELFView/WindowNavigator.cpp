@@ -1,6 +1,6 @@
 #include "WindowNavigator.h"
 
-#include "Util.h"
+#include "Location.h"
 
 struct ItemData : public wxTreeItemData {
 	wxString path;
@@ -41,16 +41,16 @@ void WindowNavigator::SetFile(ElfFile *file)
 	DeleteAllItems();
 	wxTreeItemId root = AddRoot("");
 
-	AppendItem(root, "ELF Header", -1, -1, new ItemData("header"));
+	AppendItem(root, "ELF Header", -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), "header")));
 
 	wxTreeItemId sections = AppendItem(root, "Sections");
-	AppendItem(sections, "Section Headers", -1, -1, new ItemData("section/headers"));
+	AppendItem(sections, "Section Headers", -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), "section/headers")));
 	for(int i=1;i<mFile->GetHeader()->e_shnum;i++) {
-		AppendItem(sections, Util::GetSectionTitle(mFile, i), -1, -1, new ItemData(wxString::Format("section/%i", i)));
+		AppendItem(sections, mFile->GetSectionName(i), -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), wxString::Format("section/%i", i))));
 	}
 
 	wxTreeItemId segments = AppendItem(root, "Segments");
-	AppendItem(segments, "Program Headers", -1, -1, new ItemData("segment/headers"));
+	AppendItem(segments, "Program Headers", -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), "segment/headers")));
 	for(int i=1;i<mFile->GetHeader()->e_phnum;i++) {
 		const Elf32_Phdr *header = mFile->GetProgramHeader(i);
 		wxString title;
@@ -60,7 +60,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 		} else {
 			title = wxString::Format("%i (%s)", i, desc.c_str());
 		}
-		AppendItem(segments, title, -1, -1, new ItemData(wxString::Format("segment/%i", i)));
+		AppendItem(segments, title, -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), wxString::Format("segment/%i", i))));
 	}
 }
 
@@ -71,7 +71,7 @@ void WindowNavigator::OnItemActivated(wxTreeEvent &e)
 	ItemData *data = (ItemData*)GetItemData(id);
 
 	if(data != NULL && data->path != "") {
-		mViewManager->GoToLocation(mFile, data->path);
+		mViewManager->GoToLocation(data->path);
 	}
 }
 

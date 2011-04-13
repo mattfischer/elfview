@@ -6,6 +6,7 @@
 
 #include "View.h"
 #include "ElfFile.h"
+#include "FileManager.h"
 
 #include <vector>
 
@@ -18,18 +19,18 @@ END_DECLARE_EVENT_TYPES()
 class ViewManager : public wxEvtHandler
 {
 public:
-	ViewManager();
+	ViewManager(FileManager *fileManager);
 
-	void GoToLocation(ElfFile *file, wxString location);
-	int AddLocation(ElfFile *file, wxString location);
+	void GoToLocation(wxString location);
 	void CloseView(int view);
 	void CloseAllViews(ElfFile *file);
 
 protected:
 	std::vector<View*> mViewList;
+	FileManager *mFileManager;
 
-	View *FindView(ElfFile *file, wxString location, int &idx);
-	View *CreateView(ElfFile *file, wxString location);
+	View *FindView(wxString location, int &idx);
+	View *CreateView(wxString location);
 	int AddView(View *view);
 };
 #endif

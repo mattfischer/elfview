@@ -1,10 +1,11 @@
 #include "ViewStringTable.h"
 
-#include "Util.h"
+#include "Location.h"
+
 ViewStringTable::ViewStringTable(ElfFile *file, wxString location)
 : View(file, location)
 {
-	mSection = Util::GetSectionNumber(location);
+	mSection = Location::GetSectionInt(location, 1);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 

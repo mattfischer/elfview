@@ -1,11 +1,11 @@
 #include "ViewRelocations.h"
 
-#include "Util.h"
+#include "Location.h"
 
 ViewRelocations::ViewRelocations(ElfFile *file, wxString location)
 : View(file, location)
 {
-	mSection = Util::GetSectionNumber(location);
+	mSection = Location::GetSectionInt(location, 1);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 
@@ -19,9 +19,9 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 	int numEntries = header->sh_size / header->sh_entsize;
 
 	if(header->sh_type == SHT_RELA) {
-		mTable->Setup(numEntries, 4, GetFile());
+		mTable->Setup(numEntries, 4);
 	} else {
-		mTable->Setup(numEntries, 3, GetFile());
+		mTable->Setup(numEntries, 3);
 	}
 
 	mTable->SetColumnLabel(0, "Offset");

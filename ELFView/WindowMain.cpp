@@ -61,7 +61,7 @@ void WindowMain::OnMenu(wxCommandEvent &e)
 
 void WindowMain::OnLink(wxHyperlinkEvent &e)
 {
-	mViewManager->GoToLocation((ElfFile*)e.GetClientData(), e.GetURL());
+	mViewManager->GoToLocation(e.GetURL());
 }
 
 BEGIN_EVENT_TABLE(WindowMain, wxNotebook)

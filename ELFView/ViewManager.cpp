@@ -9,19 +9,31 @@
 #include "ViewHexDump.h"
 #include "ViewDynamic.h"
 
-#include "Util.h"
+#include "Location.h"
 
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
 DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
 DEFINE_EVENT_TYPE(EVT_VM_CURRENT_VIEW_CHANGED)
 
-ViewManager::ViewManager()
+ViewManager::ViewManager(FileManager *fileManager)
 {
+	mFileManager = fileManager;
 }
 
-void ViewManager::GoToLocation(ElfFile *file, wxString location)
+void ViewManager::GoToLocation(wxString location)
 {
-	int idx = AddLocation(file, location);	
+	int idx;
+	View *view = FindView(location, idx);
+
+	if(!view) {
+		view = CreateView(location);
+
+		if(view) {
+			idx = AddView(view);
+		} else {
+			idx = -1;
+		}
+	}
 
 	if(idx != -1) {
 		wxCommandEvent evt(EVT_VM_CURRENT_VIEW_CHANGED);
@@ -30,7 +42,7 @@ void ViewManager::GoToLocation(ElfFile *file, wxString location)
 	}
 }
 
-int ViewManager::AddLocation(ElfFile *file, wxString location)
+/*int ViewManager::AddLocation(ElfFile *file, wxString location)
 {
 	int idx;
 	View *view = FindView(file, location, idx);
@@ -47,6 +59,7 @@ int ViewManager::AddLocation(ElfFile *file, wxString location)
 
 	return idx;
 }
+*/
 
 void ViewManager::CloseView(int view)
 {
@@ -69,12 +82,14 @@ void ViewManager::CloseAllViews(ElfFile *file)
 	}
 }
 
-View *ViewManager::FindView(ElfFile *file, wxString location, int &idx)
+View *ViewManager::FindView(wxString location, int &idx)
 {
 	View *view = NULL;
+	wxString base = Location::GetBase(location);
+
 	for(int i=0; i<mViewList.size(); i++) {
 		View *view = mViewList[i];
-		if(view->GetFile() == file && view->GetLocation() == location) {
+		if(view->GetLocation() == location) {
 			idx = i;
 			return view;
 		}
@@ -99,41 +114,54 @@ int ViewManager::AddView(View *view)
 	return -1;
 }
 
-View *ViewManager::CreateView(ElfFile *file, wxString location)
+View *ViewManager::CreateView(wxString location)
 {
-	if(location == "header") {
+	int token = Location::GetToken(location);
+	ElfFile *file = mFileManager->FindFile(token);
+
+	if(file == NULL) {
+		return NULL;
+	}
+
+	if(Location::GetSectionString(location, 0) == "header") {
 		return new ViewElfHeader(file, location);
-	} else if(location == "section/headers") {
-		return new ViewSectionHeaders(file, location);
-	} else if(location == "segment/headers") {
-		return new ViewProgramHeaders(file, location);
-	} else if(location.StartsWith("section/")) {
-		long section = Util::GetSectionNumber(location);
-		const Elf32_Shdr *header = file->GetSectionHeader(section);
+	} else if(Location::GetSectionString(location, 0) == "section") {
+		if(Location::GetSectionString(location, 1) == "headers") {
+			return new ViewSectionHeaders(file, location);
+		} else {
+			int section = Location::GetSectionInt(location, 1);
+			const Elf32_Shdr *header = file->GetSectionHeader(section);
 
-		switch(header->sh_type) {
-			case SHT_REL:
-			case SHT_RELA:
-				return new ViewRelocations(file, location);
-			case SHT_SYMTAB:
-			case SHT_DYNSYM:
-				return new ViewSymbolTable(file, location); 
-			case SHT_STRTAB:
-				return new ViewStringTable(file, location);
-			case SHT_DYNAMIC:
-				return new ViewDynamic(file, location);
-			default:
-				return new ViewHexDump(file, location);
+			switch(header->sh_type) {
+				case SHT_REL:
+				case SHT_RELA:
+					return new ViewRelocations(file, location);
+				case SHT_SYMTAB:
+				case SHT_DYNSYM:
+					return new ViewSymbolTable(file, location); 
+				case SHT_STRTAB:
+					return new ViewStringTable(file, location);
+				case SHT_DYNAMIC:
+					return new ViewDynamic(file, location);
+				default:
+					return new ViewHexDump(file, location);
+			}
 		}
-	} else if(location.StartsWith("segment/")) {
-		long segment = Util::GetSectionNumber(location);
-		const Elf32_Phdr *header = file->GetProgramHeader(segment);
+	} else if(Location::GetSectionString(location, 0) == "segment") {
+		if(Location::GetSectionString(location, 1) ==  "headers") {
+			return new ViewProgramHeaders(file, location);
+		} else {
+			int segment = Location::GetSectionInt(location, 1);
+			const Elf32_Phdr *header = file->GetProgramHeader(segment);
 
-		switch(header->p_type) {
-			case PT_DYNAMIC:
-				return new ViewDynamic(file, location);
-			default:
-				return new ViewHexDump(file, location);
+			switch(header->p_type) {
+				case PT_DYNAMIC:
+					return new ViewDynamic(file, location);
+				default:
+					return new ViewHexDump(file, location);
+			}
 		}
-	} else return NULL;
+	}
+	
+	return NULL;
 }

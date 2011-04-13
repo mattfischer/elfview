@@ -7,6 +7,7 @@
 #include "WindowMain.h"
 #include "ElfFile.h"
 #include "ViewManager.h"
+#include "FileManager.h"
 
 class FrameMain : public wxFrame
 {
@@ -18,6 +19,7 @@ protected:
 	WindowMain *mWindowMain;
 
 	ElfFile *mFile;
+	FileManager *mFileManager;
 	ViewManager *mViewManager;
 
 	void OnFileOpen(wxCommandEvent &e);

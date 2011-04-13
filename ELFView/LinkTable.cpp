@@ -5,10 +5,9 @@
 LinkTable::LinkTable(wxWindow *parent, wxWindowID id)
 : wxGrid(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN)
 {
-	mClientData = NULL;
 }
 
-void LinkTable::Setup(int rows, int cols, void *clientData)
+void LinkTable::Setup(int rows, int cols)
 {
 	CreateGrid(rows, cols, wxGrid::wxGridSelectRows);
 	HideRowLabels();
@@ -21,7 +20,6 @@ void LinkTable::Setup(int rows, int cols, void *clientData)
 	mNumCols = cols;
 	mTargets.SetCount(rows * cols);
 	mDownCoords.Set(-1, -1);
-	mClientData = clientData;
 
 	GetGridWindow()->Bind(wxEVT_MOTION, &LinkTable::OnMotion, this);
 	GetGridWindow()->Bind(wxEVT_LEFT_UP, &LinkTable::OnLeft, this);
@@ -69,7 +67,6 @@ void LinkTable::OnLeft(wxMouseEvent &e)
 
 		if(c == GetCoords(e.GetPosition()) && IsOverLink(e.GetPosition())) {
 			wxHyperlinkEvent e(this, wxEVT_COMMAND_HYPERLINK, mTargets[c.GetRow() * mNumCols + c.GetCol()]);
-			e.SetClientData(mClientData);
 			ProcessEvent(e);
 			return;
 		}

@@ -23,7 +23,8 @@ FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
 	menuBar->Append(fileMenu, "File");
 	SetMenuBar(menuBar);
 
-	mViewManager = new ViewManager;
+	mFileManager = new FileManager;
+	mViewManager = new ViewManager(mFileManager);
 
 	wxSplitterWindow *splitter = new wxSplitterWindow(this, -1);
 
@@ -44,10 +45,12 @@ void FrameMain::OnFileOpen(wxCommandEvent &e)
 	if(result == wxID_OK) {
 		if(mFile != NULL) {
 			mViewManager->CloseAllViews(mFile);
-			delete mFile;
+			mFileManager->CloseFile(mFile);
 		}
 
 		mFile = new ElfFile(dialog->GetPath());
+		mFileManager->AddFile(mFile);
+
 		mWindowNavigator->SetFile(mFile);		
 	}
 }

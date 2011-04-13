@@ -1,7 +1,5 @@
 #include "ViewSectionHeaders.h"
 
-#include "Util.h"
-
 ViewSectionHeaders::ViewSectionHeaders(ElfFile *file, wxString location)
 : View(file, location)
 {
@@ -19,7 +17,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
 
 			wxString name = GetFile()->GetSectionName(i);
-			wxString title = Util::GetSectionTitle(GetFile(), i);
+			wxString title = GetFile()->GetSectionName(i);
 			arrayString.Add(wxString::Format("<b>Section %s</b>", title.c_str()));
 
 			arrayString.Add(wxString::Format("Name: %s", name.c_str()));

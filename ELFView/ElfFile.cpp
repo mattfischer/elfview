@@ -1,5 +1,7 @@
 #include "ElfFile.h"
 
+static int nextToken = 0;
+
 ElfFile::ElfFile(wxString &filename)
 : mFile(filename.c_str())
 {
@@ -33,6 +35,8 @@ ElfFile::ElfFile(wxString &filename)
 			}
 		}
 	}
+
+	mToken = nextToken++;
 }
 
 size_t ElfFile::Read(void *buffer, wxFileOffset offset, size_t size)
@@ -75,7 +79,13 @@ wxString ElfFile::GetString(Elf32_Word stringTable, Elf32_Word offset)
 
 wxString ElfFile::GetSectionName(Elf32_Word section)
 {
-	return GetString(mHeader.e_shstrndx, GetSectionHeader(section)->sh_name);
+	wxString name = GetString(mHeader.e_shstrndx, GetSectionHeader(section)->sh_name);
+
+	if(name == "") {
+		return wxString::Format("%i", section);
+	} else {
+		return name;
+	}
 }
 
 wxString ElfFile::GetSymbolName(Elf32_Word section, Elf32_Word symbol)
@@ -116,4 +126,9 @@ int ElfFile::GetContainingProgramHeader(Elf32_Addr addr)
 	}
 
 	return 0;
+}
+
+int ElfFile::GetToken()
+{
+	return mToken;
 }

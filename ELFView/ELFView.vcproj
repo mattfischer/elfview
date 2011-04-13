@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FrameMain.cpp"
 				>
 			</File>
@@ -168,7 +172,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Util.cpp"
+				RelativePath=".\Location.cpp"
 				>
 			</File>
 			<File
@@ -238,6 +242,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FrameMain.h"
 				>
 			</File>
@@ -246,7 +254,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Util.h"
+				RelativePath=".\Location.h"
 				>
 			</File>
 			<File

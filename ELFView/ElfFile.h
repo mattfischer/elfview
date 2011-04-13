@@ -24,6 +24,8 @@ public:
 	const Elf32_Dyn *GetDynamicEntry(Elf32_Sword tag);
 	int GetContainingProgramHeader(Elf32_Addr addr);
 
+	int GetToken();
+
 protected:
 	wxFile mFile;
 
@@ -34,6 +36,8 @@ protected:
 	int mDynamicSize;
 
 	std::map<int, char*> mStringTables;
+
+	int mToken;
 };
 
 #endif

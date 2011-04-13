@@ -1,6 +1,6 @@
 #include "ViewDynamic.h"
 
-#include "Util.h"
+#include "Location.h"
 
 #include <wx/msgdlg.h>
 #include <wx/dcclient.h>
@@ -8,14 +8,14 @@
 ViewDynamic::ViewDynamic(ElfFile *file, wxString location)
 : View(file, location)
 {
-	if(location.StartsWith("section/")) {
-		int section = Util::GetSectionNumber(location);
+	if(Location::GetSectionString(location, 0) == "section") {
+		int section = Location::GetSectionInt(location, 1);
 		const Elf32_Shdr *header = GetFile()->GetSectionHeader(section);
 		mOffset = header->sh_offset;
 		mSize = header->sh_size;
-		SetName(Util::GetSectionTitle(GetFile(), section));
-	} else if(location.StartsWith("segment/")) {
-		int segment = Util::GetSectionNumber(location);
+		SetName(GetFile()->GetSectionName(section));
+	} else if(Location::GetSectionString(location, 0) == "segment") {
+		int segment = Location::GetSectionInt(location, 1);
 		const Elf32_Phdr *header = GetFile()->GetProgramHeader(segment);
 		mOffset = header->p_offset;
 		mSize = header->p_filesz;
@@ -83,7 +83,7 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	int numEntries = mSize / sizeof(Elf32_Dyn);
 
-	mTable->Setup(numEntries, 2, GetFile());
+	mTable->Setup(numEntries, 2);
 	mTable->SetColumnLabel(0, "Tag");
 	mTable->SetColumnLabel(1, "Value");
 	

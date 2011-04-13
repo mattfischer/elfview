@@ -1,6 +1,6 @@
 #include "ViewHexDump.h"
 
-#include "Util.h"
+#include "Location.h"
 
 #include <vector>
 #include <algorithm>
@@ -10,8 +10,8 @@ ViewHexDump::ViewHexDump(ElfFile *file, wxString location)
 {
 	int base;
 
-	if(location.StartsWith("section/")) {
-		mSection = Util::GetSectionNumber(location);
+	if(Location::GetSectionString(location, 0) == "section") {
+		mSection = Location::GetSectionInt(location, 1);
 		const Elf32_Shdr *header = GetFile()->GetSectionHeader(mSection);
 		mOffset = header->sh_offset;
 		mSize = header->sh_size;
@@ -25,8 +25,8 @@ ViewHexDump::ViewHexDump(ElfFile *file, wxString location)
 		base = header->sh_addr;
 		
 		SetName(file->GetSectionName(mSection));
-	} else if(location.StartsWith("segment/")) {
-		int segment = Util::GetSectionNumber(location);
+	} else if(Location::GetSectionString(location, 0) == "segment") {
+		int segment = Location::GetSectionInt(location, 1);
 		const Elf32_Phdr *header = GetFile()->GetProgramHeader(segment);
 		mOffset = header->p_offset;
 		mSize = header->p_memsz;

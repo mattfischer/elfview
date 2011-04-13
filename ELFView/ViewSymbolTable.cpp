@@ -1,11 +1,11 @@
 #include "ViewSymbolTable.h"
 
-#include "Util.h"
+#include "Location.h"
 
 ViewSymbolTable::ViewSymbolTable(ElfFile *file, wxString location)
 : View(file, location)
 {
-	mSection = Util::GetSectionNumber(location);
+	mSection = Location::GetSectionInt(location, 1);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 
@@ -51,7 +51,7 @@ static wxString GetSectionDescription(int section, ElfFile *file)
 		case SHN_COMMON:
 			return "(Common)";
 		default:
-			return Util::GetSectionTitle(file, section);
+			return file->GetSectionName(section);
 	}
 }
 
@@ -64,7 +64,7 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 	GetFile()->Read(buffer, header->sh_offset, header->sh_size);
 	int numEntries = header->sh_size / header->sh_entsize;
 
-	mTable->Setup(numEntries, 6, GetFile());
+	mTable->Setup(numEntries, 6);
 
 	mTable->SetColumnLabel(0, "Name");
 	mTable->SetColumnLabel(1, "Value");
@@ -83,7 +83,7 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()));
 		wxString target;
 		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
-			target = wxString::Format("section/%i", sym->st_shndx);
+			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx));
 		}
 
 		mTable->SetCell(i-1, 5, wxString::Format("%s", GetSectionDescription(sym->st_shndx, GetFile()).c_str()), target);
