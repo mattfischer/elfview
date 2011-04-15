@@ -4,7 +4,9 @@
 #include "ElfFile.h"
 #include "View.h"
 
-#include <wx/listctrl.h>
+#include "LinkTable.h"
+
+#include <vector>
 
 class ViewStringTable : public View
 {
@@ -12,9 +14,12 @@ public:
 	ViewStringTable(ElfFile *file, wxString location);
 
 protected:
-	wxListCtrl *mListCtrl;
+	LinkTable *mTable;
 	long mSection;
-	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	std::vector<int> mOffsets;
+
+	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doSetOffset(int offset);
 };
 
 #endif

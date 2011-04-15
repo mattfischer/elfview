@@ -36,3 +36,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	
 	return mHtmlListBox;
 }
+
+void ViewElfHeader::doSetOffset(int offset)
+{
+}

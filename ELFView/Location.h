@@ -7,6 +7,7 @@ class Location
 {
 public:
 	static wxString BuildLocation(int token, wxString body, wxString offset = "");
+	static wxString BuildLocation(int token, wxString body, int offset);
 
 	static int GetToken(wxString location);
 

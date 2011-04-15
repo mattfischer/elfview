@@ -18,6 +18,7 @@ DEFINE_EVENT_TYPE(EVT_VM_CURRENT_VIEW_CHANGED)
 ViewManager::ViewManager(FileManager *fileManager)
 {
 	mFileManager = fileManager;
+	mCurrentView = -1;
 }
 
 void ViewManager::GoToLocation(wxString location)
@@ -39,27 +40,10 @@ void ViewManager::GoToLocation(wxString location)
 		wxCommandEvent evt(EVT_VM_CURRENT_VIEW_CHANGED);
 		evt.SetInt(idx);
 		ProcessEvent(evt);
+		mCurrentView = idx;
+		view->SetOffset(Location::GetOffsetInt(location));
 	}
 }
-
-/*int ViewManager::AddLocation(ElfFile *file, wxString location)
-{
-	int idx;
-	View *view = FindView(file, location, idx);
-
-	if(!view) {
-		view = CreateView(file, location);
-
-		if(view) {
-			idx = AddView(view);
-		} else {
-			idx = -1;
-		}
-	}
-
-	return idx;
-}
-*/
 
 void ViewManager::CloseView(int view)
 {
@@ -69,6 +53,10 @@ void ViewManager::CloseView(int view)
 	wxCommandEvent evt(EVT_VM_VIEW_REMOVED);
 	evt.SetInt(view);
 	ProcessEvent(evt);
+
+	if(mCurrentView == mViewList.size()) {
+		mCurrentView--;
+	}
 }
 
 void ViewManager::CloseAllViews(ElfFile *file)
@@ -89,7 +77,7 @@ View *ViewManager::FindView(wxString location, int &idx)
 
 	for(int i=0; i<mViewList.size(); i++) {
 		View *view = mViewList[i];
-		if(view->GetLocation() == location) {
+		if(view->GetLocation() == base) {
 			idx = i;
 			return view;
 		}
@@ -123,11 +111,13 @@ View *ViewManager::CreateView(wxString location)
 		return NULL;
 	}
 
+	wxString base = Location::GetBase(location);
+
 	if(Location::GetSectionString(location, 0) == "header") {
-		return new ViewElfHeader(file, location);
+		return new ViewElfHeader(file, base);
 	} else if(Location::GetSectionString(location, 0) == "section") {
 		if(Location::GetSectionString(location, 1) == "headers") {
-			return new ViewSectionHeaders(file, location);
+			return new ViewSectionHeaders(file, base);
 		} else {
 			int section = Location::GetSectionInt(location, 1);
 			const Elf32_Shdr *header = file->GetSectionHeader(section);
@@ -135,30 +125,30 @@ View *ViewManager::CreateView(wxString location)
 			switch(header->sh_type) {
 				case SHT_REL:
 				case SHT_RELA:
-					return new ViewRelocations(file, location);
+					return new ViewRelocations(file, base);
 				case SHT_SYMTAB:
 				case SHT_DYNSYM:
-					return new ViewSymbolTable(file, location); 
+					return new ViewSymbolTable(file, base); 
 				case SHT_STRTAB:
-					return new ViewStringTable(file, location);
+					return new ViewStringTable(file, base);
 				case SHT_DYNAMIC:
-					return new ViewDynamic(file, location);
+					return new ViewDynamic(file, base);
 				default:
-					return new ViewHexDump(file, location);
+					return new ViewHexDump(file, base);
 			}
 		}
 	} else if(Location::GetSectionString(location, 0) == "segment") {
 		if(Location::GetSectionString(location, 1) ==  "headers") {
-			return new ViewProgramHeaders(file, location);
+			return new ViewProgramHeaders(file, base);
 		} else {
 			int segment = Location::GetSectionInt(location, 1);
 			const Elf32_Phdr *header = file->GetProgramHeader(segment);
 
 			switch(header->p_type) {
 				case PT_DYNAMIC:
-					return new ViewDynamic(file, location);
+					return new ViewDynamic(file, base);
 				default:
-					return new ViewHexDump(file, location);
+					return new ViewHexDump(file, base);
 			}
 		}
 	}

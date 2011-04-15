@@ -11,30 +11,45 @@ ViewStringTable::ViewStringTable(ElfFile *file, wxString location)
 
 wxWindow *ViewStringTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mListCtrl = new wxListCtrl(parent, id);
+	mTable = new LinkTable(parent, id);
 
-	mListCtrl->SetSingleStyle(wxLC_REPORT);
+	
 	const Elf32_Shdr *header = GetFile()->GetSectionHeader(mSection);
 
 	char *buffer = new char[header->sh_size];
 
 	GetFile()->Read(buffer, header->sh_offset, header->sh_size);
 
-	mListCtrl->InsertColumn(0, "Offset");
-	mListCtrl->InsertColumn(1, "String");
-
 	int offset = 0;
 	int i=0;
 	while(offset < header->sh_size) {
-		mListCtrl->InsertItem(i, "");
-		mListCtrl->SetItem(i, 0, wxString::Format("0x%x", offset));
-		mListCtrl->SetItem(i, 1, buffer + offset);
+		mOffsets.push_back(offset);
 		i++;
 		while(buffer[offset] != '\0') offset++;
 		offset++;
 	}
 
+	mTable->Setup(mOffsets.size(), 2);
+
+	mTable->SetColumnLabel(0, "Offset");
+	mTable->SetColumnLabel(1, "String");
+
+	for(int i=0; i<mOffsets.size(); i++) {
+		mTable->SetCell(i, 0, wxString::Format("0x%x",  mOffsets[i]));
+		mTable->SetCell(i, 1, buffer +  mOffsets[i]);
+	}
+
 	delete[] buffer;
 
-	return mListCtrl;
+	return mTable;
+}
+
+void ViewStringTable::doSetOffset(int offset)
+{
+	for(int i=0; i<mOffsets.size(); i++) {
+		if(mOffsets[i] >= offset) {
+			mTable->SelectRow(i);
+			break;
+		}
+	}
 }

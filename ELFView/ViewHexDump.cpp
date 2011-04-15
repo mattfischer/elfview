@@ -169,12 +169,14 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 				addr = wxString::Format("0x%08x: ", i + mBase);
 			}
 
+			mOffsets.push_back(i);
 			arrayString.Add("<pre>" + addr + hex + "        " + ascii + "</pre>");
 		}
 
 		if(symbol < symbols.size()) {
+			mOffsets.push_back(end);
 			arrayString.Add("<pre>" + symbols[symbol].name + ":</pre>");
-
+			
 			int newsym = symbol;
 			while(newsym < symbols.size() - 1 &&
 				symbols[newsym + 1].offset == symbols[symbol].offset &&
@@ -192,3 +194,12 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 	return mHtmlListBox;
 }
 			
+void ViewHexDump::doSetOffset(int offset)
+{
+	for(int i=1; i<mOffsets.size(); i++) {
+		if(mOffsets[i] > offset) {
+			mHtmlListBox->SetSelection(i - 1);
+			break;
+		}
+	}
+}

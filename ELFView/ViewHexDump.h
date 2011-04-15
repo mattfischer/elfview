@@ -4,6 +4,7 @@
 #include "View.h"
 
 #include <wx/htmllbox.h>
+#include <vector>
 
 class ViewHexDump : public View
 {
@@ -12,6 +13,7 @@ public:
 
 protected:
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doSetOffset(int offset);
 
 	int mSection;
 	int mBase;
@@ -19,6 +21,8 @@ protected:
 	int mFileSize;
 	int mSize;
 	bool mRel;
+	std::vector<int> mOffsets;
+
 	wxSimpleHtmlListBox *mHtmlListBox;
 };
 #endif

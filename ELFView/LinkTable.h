@@ -17,12 +17,15 @@ protected:
 	wxArrayString mTargets;
 	int mNumCols;
 	wxGridCellCoords mDownCoords;
+	wxGridCellCoords mHighlightCoords;
 
 	void OnMotion(wxMouseEvent &e);
 	void OnLeft(wxMouseEvent &e);
 
 	wxGridCellCoords GetCoords(wxPoint point);
 	bool IsOverLink(wxPoint point);
+	wxRect CalcScrolledRect(wxRect in);
+	void SetCellUnderline(wxGridCellCoords coords, bool underline);
 };
 
 #endif

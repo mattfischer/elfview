@@ -38,6 +38,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 {
 	mFile = file;
 
+	Freeze();
 	DeleteAllItems();
 	wxTreeItemId root = AddRoot("");
 
@@ -62,6 +63,8 @@ void WindowNavigator::SetFile(ElfFile *file)
 		}
 		AppendItem(segments, title, -1, -1, new ItemData(Location::BuildLocation(file->GetToken(), wxString::Format("segment/%i", i))));
 	}
+
+	Thaw();
 }
 
 void WindowNavigator::OnItemActivated(wxTreeEvent &e)

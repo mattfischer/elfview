@@ -10,10 +10,15 @@ wxString Location::BuildLocation(int token, wxString body, wxString offset)
 	location += "/" + body;
 
 	if(offset != "") {
-		location += "#" + body;
+		location += "#" + offset;
 	}
 
 	return location;
+}
+
+wxString Location::BuildLocation(int token, wxString body, int offset)
+{
+	return BuildLocation(token, body, wxString::Format("%i", offset));
 }
 
 static void Split(wxString location, wxString &protocol, long &token, wxArrayString &body, wxString &offset)

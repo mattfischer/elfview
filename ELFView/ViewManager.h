@@ -28,6 +28,7 @@ public:
 protected:
 	std::vector<View*> mViewList;
 	FileManager *mFileManager;
+	int mCurrentView;
 
 	View *FindView(wxString location, int &idx);
 	View *CreateView(wxString location);

@@ -37,3 +37,7 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	return mHtmlListBox;
 }
+
+void ViewProgramHeaders::doSetOffset(int offset)
+{
+}

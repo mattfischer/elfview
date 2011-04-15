@@ -40,3 +40,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	return mHtmlListBox;
 }
+
+void ViewSectionHeaders::doSetOffset(int offset)
+{
+}

@@ -76,14 +76,27 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 	for(int i=1; i<header->sh_size / header->sh_entsize; i++) {
 		Elf32_Sym *sym = (Elf32_Sym*)(buffer + i * header->sh_entsize);
 
-		mTable->SetCell(i-1, 0, GetFile()->GetString(header->sh_link, sym->st_name));
-		mTable->SetCell(i-1, 1, wxString::Format("0x%x", sym->st_value));
+		wxString target;
+
+		target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", header->sh_link), sym->st_name);
+
+		mTable->SetCell(i-1, 0, GetFile()->GetString(header->sh_link, sym->st_name), target);
+
+		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
+			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx), sym->st_value);
+		} else {
+			target = "";
+		}
+
+		mTable->SetCell(i-1, 1, wxString::Format("0x%x", sym->st_value), target);
 		mTable->SetCell(i-1, 2, wxString::Format("0x%x", sym->st_size));
 		mTable->SetCell(i-1, 3, wxString::Format("%s", GetBindDescription(ELF32_ST_BIND(sym->st_info)).c_str()));
 		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()));
-		wxString target;
+		
 		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
 			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx));
+		} else {
+			target = "";
 		}
 
 		mTable->SetCell(i-1, 5, wxString::Format("%s", GetSectionDescription(sym->st_shndx, GetFile()).c_str()), target);
@@ -92,4 +105,9 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 	delete[] buffer;
 
 	return mTable;
+}
+
+void ViewSymbolTable::doSetOffset(int offset)
+{
+	mTable->SelectRow(offset - 1);
 }

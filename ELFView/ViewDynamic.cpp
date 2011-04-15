@@ -121,3 +121,7 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 	return mTable;
 }
+
+void ViewDynamic::doSetOffset(int offset)
+{
+}

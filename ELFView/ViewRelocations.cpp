@@ -36,7 +36,10 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 		Elf32_Rela *rela = (Elf32_Rela*)(buffer + i * header->sh_entsize);
 
 		mTable->SetCell(i, 0, wxString::Format("0x%x", rela->r_offset));
-		mTable->SetCell(i, 1, wxString::Format("%s", GetFile()->GetSymbolName(header->sh_link, ELF32_R_SYM(rela->r_info)).c_str()));
+		int symbol = ELF32_R_SYM(rela->r_info);
+		int symbolSection = header->sh_link;
+		wxString target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", symbolSection), symbol);
+		mTable->SetCell(i, 1, wxString::Format("%s", GetFile()->GetSymbolName(symbolSection, symbol).c_str()), target);
 		mTable->SetCell(i, 2, wxString::Format("0x%x", ELF32_R_TYPE(rela->r_info)));
 
 		if(header->sh_type == SHT_RELA) {
@@ -49,3 +52,6 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 	return mTable;
 }
 		
+void ViewRelocations::doSetOffset(int offset)
+{
+}

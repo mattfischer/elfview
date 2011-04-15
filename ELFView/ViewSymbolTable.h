@@ -14,6 +14,7 @@ protected:
 	LinkTable *mTable;
 	long mSection;
 
-	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doSetOffset(int offset);
 };
 #endif

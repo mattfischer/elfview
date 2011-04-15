@@ -16,10 +16,8 @@ protected:
 	int mOffset;
 	int mSize;
 
-	wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
-
-	/*void OnLeftUp(wxMouseEvent &e);
-	void OnMotion(wxMouseEvent &e);*/
+	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doSetOffset(int offset);
 };
 
 #endif

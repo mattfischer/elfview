@@ -14,5 +14,6 @@ protected:
 	wxSimpleHtmlListBox *mHtmlListBox;
 
 	virtual wxWindow *doCreateWindow(wxWindow *parent, wxWindowID id);
+	virtual void doSetOffset(int offset);
 };
 #endif
