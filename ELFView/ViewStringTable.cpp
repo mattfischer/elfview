@@ -49,7 +49,9 @@ void ViewStringTable::doSetOffset(int offset)
 	for(int i=0; i<mOffsets.size(); i++) {
 		if(mOffsets[i] >= offset) {
 			mTable->SelectRow(i);
-			break;
+			return;
 		}
 	}
+
+	mTable->SelectRow(mOffsets.size() - 1);
 }

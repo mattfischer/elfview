@@ -33,5 +33,6 @@ protected:
 	View *FindView(wxString location, int &idx);
 	View *CreateView(wxString location);
 	int AddView(View *view);
+	wxString TranslateLocation(wxString location);
 };
 #endif

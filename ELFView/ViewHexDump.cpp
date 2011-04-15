@@ -94,7 +94,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 					continue;
 				}
 			}
-			if(ELF32_ST_TYPE(sym->st_info) != STT_OBJECT && ELF32_ST_TYPE(sym->st_info) != STT_FUNC) {
+			if(ELF32_ST_TYPE(sym->st_info) == STT_SECTION) {
 				continue;
 			}
 
@@ -199,7 +199,9 @@ void ViewHexDump::doSetOffset(int offset)
 	for(int i=1; i<mOffsets.size(); i++) {
 		if(mOffsets[i] > offset) {
 			mHtmlListBox->SetSelection(i - 1);
-			break;
+			return;
 		}
 	}
+
+	mHtmlListBox->SetSelection(mOffsets.size() - 1);
 }

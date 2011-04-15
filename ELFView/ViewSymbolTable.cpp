@@ -82,7 +82,17 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		mTable->SetCell(i-1, 0, GetFile()->GetString(header->sh_link, sym->st_name), target);
 
-		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
+		bool rel;
+
+		if(GetFile()->GetHeader()->e_type == ET_REL) {
+			rel = true;
+		} else {
+			rel = false;
+		}
+
+		if(sym->st_shndx == SHN_ABS || !rel) {
+			target = Location::BuildLocation(GetFile()->GetToken(), "absolute", sym->st_value);
+		} else if(sym->st_shndx != SHN_UNDEF) {
 			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx), sym->st_value);
 		} else {
 			target = "";
@@ -109,5 +119,6 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 void ViewSymbolTable::doSetOffset(int offset)
 {
-	mTable->SelectRow(offset - 1);
+	int row = offset / GetFile()->GetSectionHeader(mSection)->sh_entsize - 1;
+	mTable->SelectRow(row);
 }
