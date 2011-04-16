@@ -11,17 +11,19 @@
 
 #include "Location.h"
 
-DEFINE_EVENT_TYPE(EVT_VM_VIEW_ADDED)
-DEFINE_EVENT_TYPE(EVT_VM_VIEW_REMOVED)
-DEFINE_EVENT_TYPE(EVT_VM_CURRENT_VIEW_CHANGED)
+wxDEFINE_EVENT(EVT_VM_VIEW_ADDED, wxCommandEvent);
+wxDEFINE_EVENT(EVT_VM_VIEW_REMOVED, wxCommandEvent);
+wxDEFINE_EVENT(EVT_VM_CURRENT_VIEW_CHANGED, wxCommandEvent);
+wxDEFINE_EVENT(EVT_VM_HISTORY_INDEX_CHANGED, wxCommandEvent);
 
 ViewManager::ViewManager(FileManager *fileManager)
 {
 	mFileManager = fileManager;
 	mCurrentView = -1;
+	mHistoryIndex = -1;
 }
 
-void ViewManager::GoToLocation(wxString location)
+void ViewManager::GoToLocation(wxString location, bool addToHistory)
 {
 	int idx;
 
@@ -40,12 +42,49 @@ void ViewManager::GoToLocation(wxString location)
 	}
 
 	if(idx != -1) {
-		wxCommandEvent evt(EVT_VM_CURRENT_VIEW_CHANGED);
-		evt.SetInt(idx);
-		ProcessEvent(evt);
+		if(addToHistory) {
+			mHistoryIndex++;
+			mHistory.resize(mHistoryIndex + 1);
+			mHistory[mHistoryIndex] = location;
+		}
+
+		wxCommandEvent evt1(EVT_VM_CURRENT_VIEW_CHANGED);
+		evt1.SetInt(idx);
+		ProcessEvent(evt1);
+
+		wxCommandEvent evt2(EVT_VM_HISTORY_INDEX_CHANGED);
+		evt2.SetInt(mHistoryIndex);
+		ProcessEvent(evt2);
+
 		mCurrentView = idx;
 		view->SetOffset(Location::GetOffsetInt(location));
 	}
+}
+
+void ViewManager::GoBackInHistory()
+{
+	if(mHistoryIndex > 0) {
+		mHistoryIndex--;
+		GoToLocation(mHistory[mHistoryIndex], false);
+	}
+}
+
+void ViewManager::GoForwardInHistory()
+{
+	if(mHistoryIndex < mHistory.size() - 1) {
+		mHistoryIndex++;
+		GoToLocation(mHistory[mHistoryIndex], false);
+	}
+}
+
+int ViewManager::GetHistoryIndex()
+{
+	return mHistoryIndex;
+}
+
+int ViewManager::GetHistoryCount()
+{
+	return mHistory.size();
 }
 
 void ViewManager::CloseView(int view)

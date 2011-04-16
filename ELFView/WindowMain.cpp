@@ -12,9 +12,9 @@ WindowMain::WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager
 {
 	mViewManager = viewManager;
 
-	mViewManager->Connect(EVT_VM_VIEW_ADDED, (wxObjectEventFunction)&WindowMain::OnViewAdded, NULL, this);
-	mViewManager->Connect(EVT_VM_VIEW_REMOVED, (wxObjectEventFunction)&WindowMain::OnViewRemoved, NULL, this);
-	mViewManager->Connect(EVT_VM_CURRENT_VIEW_CHANGED, (wxObjectEventFunction)&WindowMain::OnCurrentViewChanged, NULL, this);
+	mViewManager->Bind(EVT_VM_VIEW_ADDED, &WindowMain::OnViewAdded, this);
+	mViewManager->Bind(EVT_VM_VIEW_REMOVED, &WindowMain::OnViewRemoved, this);
+	mViewManager->Bind(EVT_VM_CURRENT_VIEW_CHANGED, &WindowMain::OnCurrentViewChanged, this);
 
 	mCloseTab = -1;
 }

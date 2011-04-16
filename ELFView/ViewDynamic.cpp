@@ -113,7 +113,22 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 			default:
 				value = wxString::Format("0x%x", dyn->d_un.d_val);
 		}
-		mTable->SetCell(i, 1, value);
+
+		wxString target;
+		switch(dyn->d_tag) {
+			case DT_INIT:
+			case DT_FINI:
+			case DT_HASH:
+			case DT_STRTAB:
+			case DT_SYMTAB:
+			case DT_PLTGOT:
+			case DT_JMPREL:
+				target = Location::BuildLocation(GetFile()->GetToken(), "absolute", dyn->d_un.d_val);
+				break;
+			default:
+				break;
+		}
+		mTable->SetCell(i, 1, value, target);
 	}
 
 	delete[] buffer;

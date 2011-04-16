@@ -2,6 +2,7 @@
 #define FRAME_MAIN_H
 
 #include <wx/frame.h>
+#include <wx/toolbar.h>
 
 #include "WindowNavigator.h"
 #include "WindowMain.h"
@@ -21,9 +22,13 @@ protected:
 	ElfFile *mFile;
 	FileManager *mFileManager;
 	ViewManager *mViewManager;
+	wxToolBar *mToolBar;
 
 	void OnFileOpen(wxCommandEvent &e);
 	void OnFileExit(wxCommandEvent &e);
+	void OnGoBack(wxCommandEvent &e);
+	void OnGoForward(wxCommandEvent &e);
+	void OnHistoryIndexChanged(wxCommandEvent &e);
 
 	DECLARE_EVENT_TABLE();
 };

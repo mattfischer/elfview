@@ -3,12 +3,15 @@
 #include <wx/splitter.h>
 #include <wx/menu.h>
 #include <wx/filedlg.h>
+#include <wx/artprov.h>
 
 #include "Elf32.h"
 
 enum {
 	ID_File_Open,
-	ID_File_Exit
+	ID_File_Exit,
+	ID_Go_Back,
+	ID_Go_Forward
 };
 
 FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
@@ -23,8 +26,21 @@ FrameMain::FrameMain(wxWindow *parent, wxWindowID id)
 	menuBar->Append(fileMenu, "File");
 	SetMenuBar(menuBar);
 
+	mToolBar = CreateToolBar();
+
+	mToolBar->AddTool(ID_File_Open, "", wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR));
+	mToolBar->AddSeparator();
+	mToolBar->AddTool(ID_Go_Back, "", wxArtProvider::GetBitmap(wxART_GO_BACK, wxART_TOOLBAR));
+	mToolBar->AddTool(ID_Go_Forward, "", wxArtProvider::GetBitmap(wxART_GO_FORWARD, wxART_TOOLBAR));
+	mToolBar->Realize();
+
+	mToolBar->EnableTool(ID_Go_Back, false);
+	mToolBar->EnableTool(ID_Go_Forward, false);
+
 	mFileManager = new FileManager;
 	mViewManager = new ViewManager(mFileManager);
+
+	mViewManager->Bind(EVT_VM_HISTORY_INDEX_CHANGED, &FrameMain::OnHistoryIndexChanged, this);
 
 	wxSplitterWindow *splitter = new wxSplitterWindow(this, -1);
 
@@ -60,7 +76,34 @@ void FrameMain::OnFileExit(wxCommandEvent &e)
 	Close();
 }
 
+void FrameMain::OnGoBack(wxCommandEvent &e)
+{
+	mViewManager->GoBackInHistory();
+}
+
+void FrameMain::OnGoForward(wxCommandEvent &e)
+{
+	mViewManager->GoForwardInHistory();
+}
+
+void FrameMain::OnHistoryIndexChanged(wxCommandEvent &e)
+{
+	if(e.GetInt() == 0) {
+		mToolBar->EnableTool(ID_Go_Back, false);
+	} else {
+		mToolBar->EnableTool(ID_Go_Back, true);
+	}
+
+	if(e.GetInt() == mViewManager->GetHistoryCount() - 1) {
+		mToolBar->EnableTool(ID_Go_Forward, false);
+	} else {
+		mToolBar->EnableTool(ID_Go_Forward, true);
+	}
+}
+
 BEGIN_EVENT_TABLE(FrameMain, wxFrame)
 	EVT_MENU(ID_File_Open, FrameMain::OnFileOpen)
 	EVT_MENU(ID_File_Exit, FrameMain::OnFileExit)
+	EVT_MENU(ID_Go_Back, FrameMain::OnGoBack)
+	EVT_MENU(ID_Go_Forward, FrameMain::OnGoForward)
 END_EVENT_TABLE()
