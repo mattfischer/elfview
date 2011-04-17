@@ -1,5 +1,7 @@
 #include "ViewProgramHeaders.h"
 
+#include "Location.h"
+
 extern wxWindow *gWindowMain;
 
 ViewProgramHeaders::ViewProgramHeaders(ElfFile *file, wxString location)
@@ -10,32 +12,64 @@ ViewProgramHeaders::ViewProgramHeaders(ElfFile *file, wxString location)
 
 wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
-
-	wxArrayString arrayString;
+	mTable = new LinkTable(parent, id);
 
 	if(GetFile()->GetHeader()->e_phnum > 0) {
+		mTable->Setup(10 * GetFile()->GetHeader()->e_phnum, 2);
+		mTable->SetColumnLabel(0, "Name");
+		mTable->SetColumnLabel(1, "Value");
+
 		for(int i=0; i<GetFile()->GetHeader()->e_phnum;i++) {
 			const Elf32_Phdr *header = GetFile()->GetProgramHeader(i);
 
-			arrayString.Add(wxString::Format("<b>Segment %i</b>", i));
-			arrayString.Add(wxString::Format("Type: 0x%x", header->p_type));
-			arrayString.Add(wxString::Format("Offset: 0x%x", header->p_offset));
-			arrayString.Add(wxString::Format("VAddr: 0x%x", header->p_vaddr));
-			arrayString.Add(wxString::Format("PAddr: 0x%x", header->p_paddr));
-			arrayString.Add(wxString::Format("File Size: 0x%x", header->p_filesz));
-			arrayString.Add(wxString::Format("Memory Size: 0x%x", header->p_memsz));
-			arrayString.Add(wxString::Format("Flags: 0x%x", header->p_flags));
-			arrayString.Add(wxString::Format("Alignment: 0x%x", header->p_align));
-			arrayString.Add("");
+			int rowStart = 10 * i;
+
+			mTable->SetCell(rowStart, 0, wxString::Format("Segment %i", i));
+			mTable->SetCellSize(rowStart, 0, 1, 2);
+			wxFont font = mTable->GetCellFont(rowStart, 0);
+			font.SetWeight(wxFONTWEIGHT_BOLD);
+			mTable->SetCellFont(rowStart, 0, font);
+
+			mTable->SetCell(rowStart + 1, 0, "Type");
+			mTable->SetCell(rowStart + 1, 1, wxString::Format("0x%x", header->p_type));
+
+			mTable->SetCell(rowStart + 2, 0, "Offset");
+			wxString target = Location::BuildLocation(GetFile(), wxString::Format("segment/%i", i));
+			mTable->SetCell(rowStart + 2, 1, wxString::Format("0x%x", header->p_offset), target);
+
+			mTable->SetCell(rowStart + 3, 0, "VAddr");
+			mTable->SetCell(rowStart + 3, 1, wxString::Format("0x%x", header->p_vaddr));
+
+			mTable->SetCell(rowStart + 4, 0, "PAddr");
+			mTable->SetCell(rowStart + 4, 1, wxString::Format("0x%x", header->p_paddr));
+
+			mTable->SetCell(rowStart + 5, 0, "File Size");
+			mTable->SetCell(rowStart + 5, 1, wxString::Format("0x%x", header->p_filesz));
+
+			mTable->SetCell(rowStart + 6, 0, "Memory Size");
+			mTable->SetCell(rowStart + 6, 1, wxString::Format("0x%x", header->p_memsz));
+
+			mTable->SetCell(rowStart + 7, 0, "Flags");
+			mTable->SetCell(rowStart + 7, 1, wxString::Format("0x%x", header->p_flags));
+
+			mTable->SetCell(rowStart + 8, 0, "Alignment");
+			mTable->SetCell(rowStart + 8, 1, wxString::Format("0x%x", header->p_align));
 		}
 	} else {
-		arrayString.Add("<i>No Program Headers</i>");
+		mTable->Setup(1, 2);
+		mTable->SetColumnLabel(0, "Name");
+		mTable->SetColumnLabel(1, "Value");
+
+		mTable->SetCell(0, 0, "No Program Headers");
+		mTable->SetCellSize(0, 0, 1, 2);
+		wxFont font = mTable->GetCellFont(0, 0);
+		font.SetStyle(wxFONTSTYLE_ITALIC);
+		mTable->SetCellFont(0, 0, font);
 	}
 
-	mHtmlListBox->Append(arrayString);
+	mTable->AutoSizeColumns();
 
-	return mHtmlListBox;
+	return mTable;
 }
 
 void ViewProgramHeaders::doSetOffset(int offset)

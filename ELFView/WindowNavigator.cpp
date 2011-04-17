@@ -52,7 +52,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 
 	wxTreeItemId segments = AppendItem(root, "Segments");
 	AppendItem(segments, "Program Headers", -1, -1, new ItemData(Location::BuildLocation(file, "segment/headers")));
-	for(int i=1;i<mFile->GetHeader()->e_phnum;i++) {
+	for(int i=0;i<mFile->GetHeader()->e_phnum;i++) {
 		const Elf32_Phdr *header = mFile->GetProgramHeader(i);
 		wxString title;
 		wxString desc = GetPhdrTypeDescription(header->p_type);

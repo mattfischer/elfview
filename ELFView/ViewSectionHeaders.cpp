@@ -1,5 +1,7 @@
 #include "ViewSectionHeaders.h"
 
+#include "Location.h"
+
 ViewSectionHeaders::ViewSectionHeaders(ElfFile *file, wxString location)
 : View(file, location)
 {
@@ -8,37 +10,86 @@ ViewSectionHeaders::ViewSectionHeaders(ElfFile *file, wxString location)
 
 wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
-
-	wxArrayString arrayString;
+	mTable = new LinkTable(parent, id);
 
 	if(GetFile()->GetHeader()->e_shnum > 0) {
-		for(int i=1; i<GetFile()->GetHeader()->e_shnum;i++) {
+		mTable->Setup(12 * (GetFile()->GetHeader()->e_shnum - 1), 2);
+		mTable->SetColumnLabel(0, "Name");
+		mTable->SetColumnLabel(1, "Value");
+
+		for(int i=1; i<GetFile()->GetHeader()->e_shnum - 1;i++) {
 			const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
 
-			wxString name = GetFile()->GetSectionName(i);
-			wxString title = GetFile()->GetSectionName(i);
-			arrayString.Add(wxString::Format("<b>Section %s</b>", title.c_str()));
+			wxString name;
+			wxString target;
+			int rowStart = 12 * (i - 1);
 
-			arrayString.Add(wxString::Format("Name: %s", name.c_str()));
-			arrayString.Add(wxString::Format("Type: 0x%x", header->sh_type));
-			arrayString.Add(wxString::Format("Flags: 0x%x", header->sh_flags));
-			arrayString.Add(wxString::Format("Address: 0x%x", header->sh_addr));
-			arrayString.Add(wxString::Format("Offset: 0x%x", header->sh_offset));
-			arrayString.Add(wxString::Format("Size: 0x%x", header->sh_size));
-			arrayString.Add(wxString::Format("Link: 0x%x", header->sh_link));
-			arrayString.Add(wxString::Format("Info: 0x%x", header->sh_info));
-			arrayString.Add(wxString::Format("Address Alignment: 0x%x", header->sh_addralign));
-			arrayString.Add(wxString::Format("Entry Size: 0x%x", header->sh_entsize));
-			arrayString.Add("");
+			mTable->SetCell(rowStart, 0, wxString::Format("Section %i", i));
+			mTable->SetCellSize(rowStart, 0, 1, 2);
+			wxFont font = mTable->GetCellFont(rowStart, 0);
+			font.SetWeight(wxFONTWEIGHT_BOLD);
+			mTable->SetCellFont(rowStart, 0, font);
+
+			mTable->SetCell(rowStart + 1, 0, "Name");
+			mTable->SetCell(rowStart + 1, 1, GetFile()->GetSectionName(i));
+
+			mTable->SetCell(rowStart + 2, 0, "Type");
+			mTable->SetCell(rowStart + 2, 1, wxString::Format("0x%x", header->sh_type));
+
+			mTable->SetCell(rowStart + 3, 0, "Flags");
+			mTable->SetCell(rowStart + 3, 1, wxString::Format("0x%x", header->sh_flags));
+
+			mTable->SetCell(rowStart + 4, 0, "Address");
+			mTable->SetCell(rowStart + 4, 1, wxString::Format("0x%x", header->sh_addr));
+
+			mTable->SetCell(rowStart + 5, 0, "Offset");
+			target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", i));
+			mTable->SetCell(rowStart + 5, 1, wxString::Format("0x%x", header->sh_offset), target);
+
+			mTable->SetCell(rowStart + 6, 0, "Size");
+			mTable->SetCell(rowStart + 6, 1, wxString::Format("0x%x", header->sh_size));
+
+			mTable->SetCell(rowStart + 7, 0, "Link");
+			if(header->sh_link == 0) {
+				target = "";
+				name = "0x0";
+			} else {
+				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_link));
+				name = GetFile()->GetSectionName(header->sh_link);
+			}
+			mTable->SetCell(rowStart + 7, 1, name, target);
+
+			if(header->sh_info == 0) {
+				target = "";
+				name = "0x0";
+			} else {
+				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_info));
+				name = GetFile()->GetSectionName(header->sh_info);
+			}
+			mTable->SetCell(rowStart + 8, 0, "Info");
+			mTable->SetCell(rowStart + 8, 1, name, target);
+
+			mTable->SetCell(rowStart + 9, 0, "Address Alignment");
+			mTable->SetCell(rowStart + 9, 1, wxString::Format("0x%x", header->sh_addralign));
+
+			mTable->SetCell(rowStart + 10, 0, "Entry Size");
+			mTable->SetCell(rowStart + 10, 1, wxString::Format("0x%x", header->sh_entsize));
 		}
 	} else {
-		arrayString.Add("<i>No Section Headers</i>");
+		mTable->Setup(1, 2);
+		mTable->SetColumnLabel(0, "Name");
+		mTable->SetColumnLabel(1, "Value");
+
+		mTable->SetCell(0, 0, "No Section Headers");
+		mTable->SetCellSize(0, 0, 1, 2);
+		wxFont font = mTable->GetCellFont(0, 0);
+		font.SetStyle(wxFONTSTYLE_ITALIC);
+		mTable->SetCellFont(0, 0, font);
 	}
 
-	mHtmlListBox->Append(arrayString);
+	mTable->AutoSizeColumns();
 
-	return mHtmlListBox;
+	return mTable;
 }
 
 void ViewSectionHeaders::doSetOffset(int offset)
