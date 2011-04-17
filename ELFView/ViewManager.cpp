@@ -213,7 +213,7 @@ wxString ViewManager::TranslateLocation(wxString location)
 			const Elf32_Shdr *header = file->GetSectionHeader(i);
 
 			if(offset >= header->sh_addr && offset < header->sh_addr + header->sh_size) {
-				wxString newLocation = Location::BuildLocation(file->GetToken(), wxString::Format("section/%i", i), offset - header->sh_addr);
+				wxString newLocation = Location::BuildLocation(file, wxString::Format("section/%i", i), offset - header->sh_addr);
 				return newLocation;
 			}
 		}
@@ -222,7 +222,7 @@ wxString ViewManager::TranslateLocation(wxString location)
 			const Elf32_Phdr *header = file->GetProgramHeader(i);
 
 			if(header->p_type == PT_LOAD && offset >= header->p_vaddr && offset < header->p_vaddr + header->p_memsz) {
-				wxString newLocation = Location::BuildLocation(file->GetToken(), wxString::Format("segment/%i", i), offset - header->p_vaddr);
+				wxString newLocation = Location::BuildLocation(file, wxString::Format("segment/%i", i), offset - header->p_vaddr);
 				return newLocation;
 			}
 		}

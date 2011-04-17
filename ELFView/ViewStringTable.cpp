@@ -39,6 +39,9 @@ wxWindow *ViewStringTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mTable->SetCell(i, 1, buffer +  mOffsets[i]);
 	}
 
+	mTable->AutoSizeColumns();
+	mTable->AutoSizeColLabelSize(0);
+
 	delete[] buffer;
 
 	return mTable;

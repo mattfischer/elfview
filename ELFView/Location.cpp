@@ -21,6 +21,16 @@ wxString Location::BuildLocation(int token, wxString body, int offset)
 	return BuildLocation(token, body, wxString::Format("%i", offset));
 }
 
+wxString Location::BuildLocation(ElfFile *file, wxString body, wxString offset)
+{
+	return BuildLocation(file->GetToken(), body, offset);
+}
+
+wxString Location::BuildLocation(ElfFile *file, wxString body, int offset)
+{
+	return BuildLocation(file->GetToken(), body, offset);
+}
+
 static void Split(wxString location, wxString &protocol, long &token, wxArrayString &body, wxString &offset)
 {
 	int idx;

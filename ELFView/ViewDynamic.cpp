@@ -123,7 +123,7 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 			case DT_SYMTAB:
 			case DT_PLTGOT:
 			case DT_JMPREL:
-				target = Location::BuildLocation(GetFile()->GetToken(), "absolute", dyn->d_un.d_val);
+				target = Location::BuildLocation(GetFile(), "absolute", dyn->d_un.d_val);
 				break;
 			default:
 				break;

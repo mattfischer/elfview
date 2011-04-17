@@ -78,7 +78,7 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		wxString target;
 
-		target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", header->sh_link), sym->st_name);
+		target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_link), sym->st_name);
 
 		mTable->SetCell(i-1, 0, GetFile()->GetString(header->sh_link, sym->st_name), target);
 
@@ -91,9 +91,9 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		}
 
 		if(sym->st_shndx == SHN_ABS || !rel) {
-			target = Location::BuildLocation(GetFile()->GetToken(), "absolute", sym->st_value);
+			target = Location::BuildLocation(GetFile(), "absolute", sym->st_value);
 		} else if(sym->st_shndx != SHN_UNDEF) {
-			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx), sym->st_value);
+			target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", sym->st_shndx), sym->st_value);
 		} else {
 			target = "";
 		}
@@ -104,13 +104,15 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()));
 		
 		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
-			target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", sym->st_shndx));
+			target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", sym->st_shndx));
 		} else {
 			target = "";
 		}
 
 		mTable->SetCell(i-1, 5, wxString::Format("%s", GetSectionDescription(sym->st_shndx, GetFile()).c_str()), target);
 	}
+
+	mTable->AutoSizeColumns();
 
 	delete[] buffer;
 

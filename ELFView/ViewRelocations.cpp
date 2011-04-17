@@ -38,7 +38,7 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 		mTable->SetCell(i, 0, wxString::Format("0x%x", rela->r_offset));
 		int symbol = ELF32_R_SYM(rela->r_info);
 		int symbolSection = header->sh_link;
-		wxString target = Location::BuildLocation(GetFile()->GetToken(), wxString::Format("section/%i", symbolSection), symbol * GetFile()->GetSectionHeader(symbolSection)->sh_entsize);
+		wxString target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", symbolSection), symbol * GetFile()->GetSectionHeader(symbolSection)->sh_entsize);
 		mTable->SetCell(i, 1, wxString::Format("%s", GetFile()->GetSymbolName(symbolSection, symbol).c_str()), target);
 		mTable->SetCell(i, 2, wxString::Format("0x%x", ELF32_R_TYPE(rela->r_info)));
 
@@ -46,6 +46,8 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCell(i, 3, wxString::Format("0x%x", rela->r_addend));
 		}
 	}
+
+	mTable->AutoSizeColumns();
 
 	delete[] buffer;
 

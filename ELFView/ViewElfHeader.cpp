@@ -1,5 +1,7 @@
 #include "ViewElfHeader.h"
 
+#include "Location.h"
+
 #include <wx/htmllbox.h>
 
 extern wxWindow *gWindowMain;
@@ -11,30 +13,82 @@ ViewElfHeader::ViewElfHeader(ElfFile *file, wxString location)
 
 wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
-	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
-	
-	wxArrayString arrayString;
+	mTable = new LinkTable(parent, id);
 
+	mTable->Setup(14, 2);
+	
 	const Elf32_Ehdr *header = GetFile()->GetHeader();
 
-	arrayString.Add(wxString::Format("Type: 0x%x", header->e_type));
-	arrayString.Add(wxString::Format("Machine: 0x%x", header->e_machine));
-	arrayString.Add(wxString::Format("Version: 0x%x", header->e_version));
-	arrayString.Add(wxString::Format("Entry point: 0x%08x", header->e_entry));
-	arrayString.Add(wxString::Format("Program Header Offset: 0x%x", header->e_phoff));
-	arrayString.Add(wxString::Format("Section Header Offset: 0x%x", header->e_shoff));
-	arrayString.Add(wxString::Format("Flags: 0x%x", header->e_flags));
-	arrayString.Add(wxString::Format("Header Size: 0x%x", header->e_ehsize));
-	arrayString.Add(wxString::Format("Program Header Entry Size: 0x%x", header->e_phentsize));
-	arrayString.Add(wxString::Format("Number of Program Headers: 0x%x", header->e_phnum));
-	arrayString.Add(wxString::Format("Section Header Entry Size: 0x%x", header->e_shentsize));
-	arrayString.Add(wxString::Format("Number of Section Headers: 0x%x", header->e_shnum));
-	arrayString.Add(wxString::Format("Program Header Entry Size: 0x%x", header->e_phentsize));
-	arrayString.Add(wxString::Format("Section Header String Table: 0x%x", header->e_shstrndx));
+	wxString target;
 
-	mHtmlListBox->Append(arrayString);
-	
-	return mHtmlListBox;
+	mTable->SetColumnLabel(0, "Name");
+	mTable->SetColumnLabel(1, "Value");
+
+	mTable->SetCell(0, 0, "Type");
+	mTable->SetCell(0, 1, wxString::Format("0x%x", header->e_type));
+
+	mTable->SetCell(1, 0, "Machine");
+	mTable->SetCell(1, 1, wxString::Format("0x%x", header->e_machine));
+
+	mTable->SetCell(2, 0, "Version");
+	mTable->SetCell(2, 1, wxString::Format("0x%x", header->e_version));
+
+	if(header->e_entry != 0) {
+		target = Location::BuildLocation(GetFile(), "absolute", header->e_entry);
+	} else {
+		target = "";
+	}
+	mTable->SetCell(3, 0, "Entry point");
+	mTable->SetCell(3, 1, wxString::Format("0x%08x", header->e_entry), target);
+
+	if(header->e_phoff != 0) {
+		target = Location::BuildLocation(GetFile(), "segment/headers");
+	} else {
+		target = "";
+	}
+	mTable->SetCell(4, 0, "Program Header Offset");
+	mTable->SetCell(4, 1, wxString::Format("0x%x", header->e_phoff), target);
+
+	if(header->e_shoff != 0) {
+		target = Location::BuildLocation(GetFile(), "section/headers");
+	} else {
+		target = "";
+	}
+	mTable->SetCell(5, 0, "Section Header Offset");
+	mTable->SetCell(5, 1, wxString::Format("0x%x", header->e_shoff), target);
+
+	mTable->SetCell(6, 0, "Flags");
+	mTable->SetCell(6, 1, wxString::Format("0x%x", header->e_flags));
+
+	mTable->SetCell(7, 0, "Header Size");
+	mTable->SetCell(7, 1, wxString::Format("0x%x", header->e_ehsize));
+
+	mTable->SetCell(8, 0, "Program Header Entry Size");
+	mTable->SetCell(8, 1, wxString::Format("0x%x", header->e_phentsize));
+
+	mTable->SetCell(9, 0, "Number of Program Headers");
+	mTable->SetCell(9, 1, wxString::Format("0x%x", header->e_phnum));
+
+	mTable->SetCell(10, 0, "Section Header Entry Size");
+	mTable->SetCell(10, 1, wxString::Format("0x%x", header->e_shentsize));
+
+	mTable->SetCell(11, 0, "Number of Section Headers");
+	mTable->SetCell(11, 1, wxString::Format("0x%x", header->e_shnum));
+
+	mTable->SetCell(12, 0, "Program Header Entry Size");
+	mTable->SetCell(12, 1, wxString::Format("0x%x", header->e_phentsize));
+
+	if(header->e_shstrndx != 0) {
+		target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->e_shstrndx));
+	} else {
+		target = "";
+	}
+	mTable->SetCell(13, 0, "Section Header String Table");
+	mTable->SetCell(13, 1, GetFile()->GetSectionName(header->e_shstrndx), target);
+
+	mTable->AutoSizeColumns();
+
+	return mTable;
 }
 
 void ViewElfHeader::doSetOffset(int offset)
