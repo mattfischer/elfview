@@ -26,6 +26,7 @@ protected:
 	void OnRightUp(wxMouseEvent &e);
 	void OnMenu(wxCommandEvent &e);	
 	void OnLink(wxHyperlinkEvent &e);
+	void OnHtmlLink(wxHtmlLinkEvent &e);
 
 	ViewManager *mViewManager;
 	int mCloseTab;

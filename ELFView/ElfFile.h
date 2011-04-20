@@ -23,6 +23,7 @@ public:
 	wxString GetString(Elf32_Word stringTable, Elf32_Word offset);
 	const Elf32_Dyn *GetDynamicEntry(Elf32_Sword tag);
 	int GetContainingProgramHeader(Elf32_Addr addr);
+	char *ReadSection(Elf32_Word section);
 
 	int GetToken();
 

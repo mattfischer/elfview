@@ -65,22 +65,34 @@ struct Symbol {
 
 wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
+	ElfFile *file = GetFile();
 	mHtmlListBox = new wxSimpleHtmlListBox(parent, id);
 	wxArrayString arrayString;
 
 	std::vector<Symbol> symbols;
+	char *relSectionBuf = NULL;
+	int relSection;
+	int relSymtab;
 
-	const Elf32_Shdr *sectionHeader = GetFile()->GetSectionHeader(mSection);
+	const Elf32_Shdr *sectionHeader = file->GetSectionHeader(mSection);
 
-	for(int i=0; i<GetFile()->GetHeader()->e_shnum; i++) {
-		const Elf32_Shdr *header = GetFile()->GetSectionHeader(i);
+	for(int i=0; i<file->GetHeader()->e_shnum; i++) {
+		const Elf32_Shdr *header = file->GetSectionHeader(i);
+
+		if(header->sh_type == SHT_REL || header->sh_type == SHT_RELA) {
+			if(mSection != -1 && header->sh_info == mSection) {
+				relSection = i;
+				relSectionBuf = file->ReadSection(relSection);
+				relSymtab = header->sh_link;
+			}
+			continue;
+		}
 
 		if(header->sh_type != SHT_SYMTAB && header->sh_type != SHT_DYNSYM) {
 			continue;
 		}
 
-		char *buffer = new char[header->sh_size];
-		GetFile()->Read(buffer, header->sh_offset, header->sh_size);
+		char *buffer = file->ReadSection(i);
 
 		for(int j=0; j<header->sh_size / header->sh_entsize; j++) {
 			Elf32_Sym *sym = (Elf32_Sym*) (buffer + j * header->sh_entsize);
@@ -116,8 +128,16 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 	unsigned char *buffer = new unsigned char[mFileSize];
 	GetFile()->Read(buffer, mOffset, mFileSize);
 
+	int addrsize = 1;
+	int sz = (mSize + mBase) >> 4;
+	while(sz > 0) {
+		sz >>= 4;
+		addrsize++;
+	}
+
 	int start = 0;
 	int end;
+	int relIndex = 0;
 	for(int symbol = 0; symbol < symbols.size() + 1; symbol++) {
 		if(symbol < symbols.size()) {
 			end = symbols[symbol].offset;
@@ -125,12 +145,16 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 			end = mSize;
 		}
 
-		for(int i=start; i<end; i += 8) {
+		for(int i=start; i<end; i += 4) {
 			wxString hex;
 			wxString ascii;
-			int extraSpace = 8;
+			int extraSpace = 4;
+			int num = 4;
+			if(end - i < 4) {
+				num = end - i;
+			}
 
-			for(int j=i; j<i+8 && j<end; j++) {
+			for(int j=i + num - 1; j>=i; j--) {
 				unsigned char c;
 				
 				if(j < mFileSize ) {
@@ -139,43 +163,55 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 					c = 0;
 				}
 
-				hex += wxString::Format("0x%02x ", (int)c);
-
-				if(c == '>') {
-					ascii += "&gt;";
-				} else if(c == '<') {
-					ascii += "&lt;";
-				} else if(c == ' ') {
-					ascii += "&nbsp;";
-				} else if(c == '&') {
-					ascii += "&amp;";
-				} else if(c > ' ' && c < 127) {
-					ascii += c;
-				} else {
-					ascii += '.';
-				}
+				hex += wxString::Format("%02x", (int)c);
 
 				extraSpace--;
 			}
 
 			for(int j=0; j<extraSpace; j++) {
-				hex += "     ";
+				hex += "  ";
 			}
 
+			int a = (i + mBase) >> 4;
+			int sz = 1;
+			while(a > 0) {
+				a >>= 4;
+				sz++;
+			}
+			
 			wxString addr;
+			for(int x = 0; x < addrsize - sz; x++ ) {
+				addr += " ";
+			}
+
 			if(mRel) {
-				addr = wxString::Format("0x%x: ", i);
+				addr += wxString::Format("0x%x: ", i);
 			} else {
-				addr = wxString::Format("0x%08x: ", i + mBase);
+				addr += wxString::Format("0x%08x: ", i + mBase);
 			}
 
 			mOffsets.push_back(i);
-			arrayString.Add("<pre>" + addr + hex + "        " + ascii + "</pre>");
+
+			wxString relString;
+			if(relSectionBuf != NULL) {
+				const Elf32_Shdr *relSectionHeader = file->GetSectionHeader(relSection);
+				if(relIndex * relSectionHeader->sh_entsize < relSectionHeader->sh_size) {
+					Elf32_Rel *rel = (Elf32_Rel*)(relSectionBuf + relSectionHeader->sh_entsize * relIndex);
+					if(rel->r_offset == i) {
+						wxString relText = file->GetSymbolName(relSymtab, ELF32_R_SYM(rel->r_info));
+						wxString relTarget = Location::BuildLocation(file, wxString::Format("section/%i", relSection), relSectionHeader->sh_entsize * relIndex);
+						relString = "<a href=\"" + relTarget + "\">" + relText + "</a>";
+						relIndex++;
+					}
+				}
+			}
+			arrayString.Add("<pre>" + addr + hex + "  " + relString + "</pre>");
 		}
 
 		if(symbol < symbols.size()) {
 			mOffsets.push_back(end);
-			arrayString.Add("<pre>" + symbols[symbol].name + ":</pre>");
+			wxString target = Location::BuildLocation(file, wxString::Format("section/%i", symbols[symbol].section), symbols[symbol].num * file->GetSectionHeader(symbols[symbol].section)->sh_entsize);
+			arrayString.Add("<pre><a href=\"" +target + "\">" + symbols[symbol].name + "</a>:</pre>");
 			
 			int newsym = symbol;
 			while(newsym < symbols.size() - 1 &&

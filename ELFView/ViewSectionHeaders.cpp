@@ -52,16 +52,16 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCell(rowStart + 7, 0, "Link");
 			if(header->sh_link == 0) {
 				target = "";
-				name = "0x0";
+				name = wxString::Format("0x%x", header->sh_link);
 			} else {
 				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_link));
 				name = GetFile()->GetSectionName(header->sh_link);
 			}
 			mTable->SetCell(rowStart + 7, 1, name, target);
 
-			if(header->sh_info == 0) {
+			if(header->sh_info == 0 || header->sh_type == SHT_SYMTAB || header->sh_type == SHT_DYNSYM) {
 				target = "";
-				name = "0x0";
+				name = wxString::Format("0x%x", header->sh_info);
 			} else {
 				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_info));
 				name = GetFile()->GetSectionName(header->sh_info);

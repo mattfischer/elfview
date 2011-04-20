@@ -56,4 +56,7 @@ wxWindow *ViewRelocations::doCreateWindow(wxWindow *parent, wxWindowID id)
 		
 void ViewRelocations::doSetOffset(int offset)
 {
+	int row = offset / GetFile()->GetSectionHeader(mSection)->sh_entsize;
+	mTable->SelectRow(row);
+
 }

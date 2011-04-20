@@ -64,8 +64,14 @@ void WindowMain::OnLink(wxHyperlinkEvent &e)
 	mViewManager->GoToLocation(e.GetURL());
 }
 
+void WindowMain::OnHtmlLink(wxHtmlLinkEvent &e)
+{
+	mViewManager->GoToLocation(e.GetLinkInfo().GetHref());
+}
+
 BEGIN_EVENT_TABLE(WindowMain, wxNotebook)
 	EVT_RIGHT_UP(WindowMain::OnRightUp)
 	EVT_MENU(wxID_ANY, WindowMain::OnMenu)
 	EVT_HYPERLINK(wxID_ANY, WindowMain::OnLink)
+	EVT_HTML_LINK_CLICKED(wxID_ANY, WindowMain::OnHtmlLink)
 END_EVENT_TABLE()

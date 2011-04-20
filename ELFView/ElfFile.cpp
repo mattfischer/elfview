@@ -128,6 +128,16 @@ int ElfFile::GetContainingProgramHeader(Elf32_Addr addr)
 	return 0;
 }
 
+char *ElfFile::ReadSection(Elf32_Word section)
+{
+	const Elf32_Shdr *header = GetSectionHeader(section);
+
+	char *buffer = new char[header->sh_size];
+	Read(buffer, header->sh_offset, header->sh_size);
+
+	return buffer;
+}
+
 int ElfFile::GetToken()
 {
 	return mToken;
