@@ -25,7 +25,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetColumnLabel(1, "Value");
 
 	mTable->SetCell(0, 0, "Type");
-	mTable->SetCell(0, 1, wxString::Format("0x%x", header->e_type));
+	mTable->SetCell(0, 1, wxString::Format("0x%x", header->e_type), Location::BuildLocation("flags", "elf-type"));
 
 	mTable->SetCell(1, 0, "Machine");
 	mTable->SetCell(1, 1, wxString::Format("0x%x", header->e_machine));
@@ -34,7 +34,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetCell(2, 1, wxString::Format("0x%x", header->e_version));
 
 	if(header->e_entry != 0) {
-		target = Location::BuildLocation(GetFile(), "absolute", header->e_entry);
+		target = Location::BuildElfLocation(GetFile(), "absolute", header->e_entry);
 	} else {
 		target = "";
 	}
@@ -42,7 +42,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetCell(3, 1, wxString::Format("0x%08x", header->e_entry), target);
 
 	if(header->e_phoff != 0) {
-		target = Location::BuildLocation(GetFile(), "segment/headers");
+		target = Location::BuildElfLocation(GetFile(), "segment/headers");
 	} else {
 		target = "";
 	}
@@ -50,7 +50,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetCell(4, 1, wxString::Format("0x%x", header->e_phoff), target);
 
 	if(header->e_shoff != 0) {
-		target = Location::BuildLocation(GetFile(), "section/headers");
+		target = Location::BuildElfLocation(GetFile(), "section/headers");
 	} else {
 		target = "";
 	}
@@ -79,7 +79,7 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetCell(12, 1, wxString::Format("0x%x", header->e_phentsize));
 
 	if(header->e_shstrndx != 0) {
-		target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->e_shstrndx));
+		target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", header->e_shstrndx));
 	} else {
 		target = "";
 	}

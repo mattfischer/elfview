@@ -19,6 +19,11 @@ WindowMain::WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager
 	mCloseTab = -1;
 }
 
+void WindowMain::GoToLocation(wxString location)
+{
+	mViewManager->GoToLocation(location);
+}
+
 void WindowMain::OnViewAdded(wxCommandEvent &e)
 {
 	View *view = (View*)e.GetClientData();
@@ -59,19 +64,7 @@ void WindowMain::OnMenu(wxCommandEvent &e)
 	mViewManager->CloseView(mCloseTab);
 }
 
-void WindowMain::OnLink(wxHyperlinkEvent &e)
-{
-	mViewManager->GoToLocation(e.GetURL());
-}
-
-void WindowMain::OnHtmlLink(wxHtmlLinkEvent &e)
-{
-	mViewManager->GoToLocation(e.GetLinkInfo().GetHref());
-}
-
 BEGIN_EVENT_TABLE(WindowMain, wxNotebook)
 	EVT_RIGHT_UP(WindowMain::OnRightUp)
 	EVT_MENU(wxID_ANY, WindowMain::OnMenu)
-	EVT_HYPERLINK(wxID_ANY, WindowMain::OnLink)
-	EVT_HTML_LINK_CLICKED(wxID_ANY, WindowMain::OnHtmlLink)
 END_EVENT_TABLE()

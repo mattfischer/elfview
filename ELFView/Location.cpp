@@ -2,12 +2,11 @@
 
 #include <wx/arrstr.h>
 
-wxString Location::BuildLocation(int token, wxString body, wxString offset)
+wxString Location::BuildLocation(wxString prefix, wxString body, wxString offset)
 {
-	wxString location = "elf://";
+	wxString location = prefix + "://";
 
-	location += wxString::Format("%i", token);
-	location += "/" + body;
+	location += body;
 
 	if(offset != "") {
 		location += "#" + offset;
@@ -16,43 +15,42 @@ wxString Location::BuildLocation(int token, wxString body, wxString offset)
 	return location;
 }
 
-wxString Location::BuildLocation(int token, wxString body, int offset)
+wxString Location::BuildLocation(wxString prefix, wxString body, int offset)
 {
-	return BuildLocation(token, body, wxString::Format("%i", offset));
+	return BuildLocation(prefix, body, wxString::Format("%i", offset));
 }
 
-wxString Location::BuildLocation(ElfFile *file, wxString body, wxString offset)
+
+wxString Location::BuildElfLocation(int token, wxString body, wxString offset)
 {
-	return BuildLocation(file->GetToken(), body, offset);
+	return BuildLocation("elf", wxString::Format("%i/%s", token, body.c_str()), offset);
 }
 
-wxString Location::BuildLocation(ElfFile *file, wxString body, int offset)
+wxString Location::BuildElfLocation(int token, wxString body, int offset)
 {
-	return BuildLocation(file->GetToken(), body, offset);
+	return BuildElfLocation(token, body, wxString::Format("%i", offset));
 }
 
-static void Split(wxString location, wxString &protocol, long &token, wxArrayString &body, wxString &offset)
+wxString Location::BuildElfLocation(ElfFile *file, wxString body, wxString offset)
+{
+	return BuildElfLocation(file->GetToken(), body, offset);
+}
+
+wxString Location::BuildElfLocation(ElfFile *file, wxString body, int offset)
+{
+	return BuildElfLocation(file->GetToken(), body, offset);
+}
+
+static void Split(wxString location, wxString &prefix, wxArrayString &body, wxString &offset)
 {
 	int idx;
 
 	idx = location.Find("://");
 
 	if(idx != wxNOT_FOUND) {
-		protocol = location.SubString(0, idx);
+		prefix = location.SubString(0, idx - 1);
 		location = location.SubString(idx + 3, location.Length());
 	}
-
-	idx = location.Find("/");
-	wxString t;
-
-	if(idx == wxNOT_FOUND) {
-		t = location;
-	} else {
-		t = location.Mid(0, idx);
-		location = location.Mid(idx + 1);
-	}
-
-	t.ToLong(&token);
 
 	idx = location.Find("#");
 
@@ -77,26 +75,29 @@ static void Split(wxString location, wxString &protocol, long &token, wxArrayStr
 	}
 }
 
-int Location::GetToken(wxString location)
+wxString Location::GetPrefix(wxString location)
 {
-	wxString protocol;
-	long token;
+	wxString prefix;
 	wxArrayString body;
 	wxString offset;
 
-	Split(location, protocol, token, body, offset);
+	Split(location, prefix, body, offset);
 
-	return token;
+	return prefix;
+}
+
+int Location::GetElfToken(wxString location)
+{
+	return GetSectionInt(location, 0);
 }
 
 wxString Location::GetSectionString(wxString location, int section)
 {
-	wxString protocol;
-	long token;
+	wxString prefix;
 	wxArrayString body;
 	wxString offset;
 
-	Split(location, protocol, token, body, offset);
+	Split(location, prefix, body, offset);
 
 	if(section < body.Count()) {
 		return body.Item(section);
@@ -120,12 +121,11 @@ int Location::GetSectionInt(wxString location, int section)
 
 wxString Location::GetOffsetString(wxString location)
 {
-	wxString protocol;
-	long token;
+	wxString prefix;
 	wxArrayString body;
 	wxString offset;
 
-	Split(location, protocol, token, body, offset);
+	Split(location, prefix, body, offset);
 
 	return offset;
 }

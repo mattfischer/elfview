@@ -42,16 +42,16 @@ void WindowNavigator::SetFile(ElfFile *file)
 	DeleteAllItems();
 	wxTreeItemId root = AddRoot("");
 
-	AppendItem(root, "ELF Header", -1, -1, new ItemData(Location::BuildLocation(file, "header")));
+	AppendItem(root, "ELF Header", -1, -1, new ItemData(Location::BuildElfLocation(file, "header")));
 
 	wxTreeItemId sections = AppendItem(root, "Sections");
-	AppendItem(sections, "Section Headers", -1, -1, new ItemData(Location::BuildLocation(file, "section/headers")));
+	AppendItem(sections, "Section Headers", -1, -1, new ItemData(Location::BuildElfLocation(file, "section/headers")));
 	for(int i=1;i<mFile->GetHeader()->e_shnum;i++) {
-		AppendItem(sections, mFile->GetSectionName(i), -1, -1, new ItemData(Location::BuildLocation(file, wxString::Format("section/%i", i))));
+		AppendItem(sections, mFile->GetSectionName(i), -1, -1, new ItemData(Location::BuildElfLocation(file, wxString::Format("section/%i", i))));
 	}
 
 	wxTreeItemId segments = AppendItem(root, "Segments");
-	AppendItem(segments, "Program Headers", -1, -1, new ItemData(Location::BuildLocation(file, "segment/headers")));
+	AppendItem(segments, "Program Headers", -1, -1, new ItemData(Location::BuildElfLocation(file, "segment/headers")));
 	for(int i=0;i<mFile->GetHeader()->e_phnum;i++) {
 		const Elf32_Phdr *header = mFile->GetProgramHeader(i);
 		wxString title;
@@ -61,7 +61,7 @@ void WindowNavigator::SetFile(ElfFile *file)
 		} else {
 			title = wxString::Format("%i (%s)", i, desc.c_str());
 		}
-		AppendItem(segments, title, -1, -1, new ItemData(Location::BuildLocation(file, wxString::Format("segment/%i", i))));
+		AppendItem(segments, title, -1, -1, new ItemData(Location::BuildElfLocation(file, wxString::Format("segment/%i", i))));
 	}
 
 	Thaw();

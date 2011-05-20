@@ -146,7 +146,7 @@ int ViewManager::AddView(View *view)
 
 View *ViewManager::CreateView(wxString location)
 {
-	int token = Location::GetToken(location);
+	int token = Location::GetElfToken(location);
 	ElfFile *file = mFileManager->FindFile(token);
 
 	if(file == NULL) {
@@ -155,13 +155,13 @@ View *ViewManager::CreateView(wxString location)
 
 	wxString base = Location::GetBase(location);
 
-	if(Location::GetSectionString(location, 0) == "header") {
+	if(Location::GetSectionString(location, 1) == "header") {
 		return new ViewElfHeader(file, base);
-	} else if(Location::GetSectionString(location, 0) == "section") {
-		if(Location::GetSectionString(location, 1) == "headers") {
+	} else if(Location::GetSectionString(location, 1) == "section") {
+		if(Location::GetSectionString(location, 2) == "headers") {
 			return new ViewSectionHeaders(file, base);
 		} else {
-			int section = Location::GetSectionInt(location, 1);
+			int section = Location::GetSectionInt(location, 2);
 			const Elf32_Shdr *header = file->GetSectionHeader(section);
 
 			switch(header->sh_type) {
@@ -179,11 +179,11 @@ View *ViewManager::CreateView(wxString location)
 					return new ViewHexDump(file, base);
 			}
 		}
-	} else if(Location::GetSectionString(location, 0) == "segment") {
-		if(Location::GetSectionString(location, 1) ==  "headers") {
+	} else if(Location::GetSectionString(location, 1) == "segment") {
+		if(Location::GetSectionString(location, 2) ==  "headers") {
 			return new ViewProgramHeaders(file, base);
 		} else {
-			int segment = Location::GetSectionInt(location, 1);
+			int segment = Location::GetSectionInt(location, 2);
 			const Elf32_Phdr *header = file->GetProgramHeader(segment);
 
 			switch(header->p_type) {
@@ -200,20 +200,20 @@ View *ViewManager::CreateView(wxString location)
 
 wxString ViewManager::TranslateLocation(wxString location)
 {
-	int token = Location::GetToken(location);
+	int token = Location::GetElfToken(location);
 	ElfFile *file = mFileManager->FindFile(token);
 
 	if(file == NULL) {
 		return location;
 	}
 
-	if(Location::GetSectionString(location, 0) == "absolute") {
+	if(Location::GetSectionString(location, 1) == "absolute") {
 		int offset = Location::GetOffsetInt(location);
 		for(int i=0; i<file->GetHeader()->e_shnum; i++) {
 			const Elf32_Shdr *header = file->GetSectionHeader(i);
 
 			if(offset >= header->sh_addr && offset < header->sh_addr + header->sh_size) {
-				wxString newLocation = Location::BuildLocation(file, wxString::Format("section/%i", i), offset - header->sh_addr);
+				wxString newLocation = Location::BuildElfLocation(file, wxString::Format("section/%i", i), offset - header->sh_addr);
 				return newLocation;
 			}
 		}
@@ -222,7 +222,7 @@ wxString ViewManager::TranslateLocation(wxString location)
 			const Elf32_Phdr *header = file->GetProgramHeader(i);
 
 			if(header->p_type == PT_LOAD && offset >= header->p_vaddr && offset < header->p_vaddr + header->p_memsz) {
-				wxString newLocation = Location::BuildLocation(file, wxString::Format("segment/%i", i), offset - header->p_vaddr);
+				wxString newLocation = Location::BuildElfLocation(file, wxString::Format("segment/%i", i), offset - header->p_vaddr);
 				return newLocation;
 			}
 		}

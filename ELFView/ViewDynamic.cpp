@@ -8,14 +8,14 @@
 ViewDynamic::ViewDynamic(ElfFile *file, wxString location)
 : View(file, location)
 {
-	if(Location::GetSectionString(location, 0) == "section") {
-		int section = Location::GetSectionInt(location, 1);
+	if(Location::GetSectionString(location, 1) == "section") {
+		int section = Location::GetSectionInt(location, 2);
 		const Elf32_Shdr *header = GetFile()->GetSectionHeader(section);
 		mOffset = header->sh_offset;
 		mSize = header->sh_size;
 		SetName(GetFile()->GetSectionName(section));
-	} else if(Location::GetSectionString(location, 0) == "segment") {
-		int segment = Location::GetSectionInt(location, 1);
+	} else if(Location::GetSectionString(location, 1) == "segment") {
+		int segment = Location::GetSectionInt(location, 2);
 		const Elf32_Phdr *header = GetFile()->GetProgramHeader(segment);
 		mOffset = header->p_offset;
 		mSize = header->p_filesz;
@@ -123,7 +123,7 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 			case DT_SYMTAB:
 			case DT_PLTGOT:
 			case DT_JMPREL:
-				target = Location::BuildLocation(GetFile(), "absolute", dyn->d_un.d_val);
+				target = Location::BuildElfLocation(GetFile(), "absolute", dyn->d_un.d_val);
 				break;
 			default:
 				break;

@@ -34,7 +34,7 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCell(rowStart + 1, 1, wxString::Format("0x%x", header->p_type));
 
 			mTable->SetCell(rowStart + 2, 0, "Offset");
-			wxString target = Location::BuildLocation(GetFile(), wxString::Format("segment/%i", i));
+			wxString target = Location::BuildElfLocation(GetFile(), wxString::Format("segment/%i", i));
 			mTable->SetCell(rowStart + 2, 1, wxString::Format("0x%x", header->p_offset), target);
 
 			mTable->SetCell(rowStart + 3, 0, "VAddr");

@@ -10,8 +10,8 @@ ViewHexDump::ViewHexDump(ElfFile *file, wxString location)
 {
 	int base;
 
-	if(Location::GetSectionString(location, 0) == "section") {
-		mSection = Location::GetSectionInt(location, 1);
+	if(Location::GetSectionString(location, 1) == "section") {
+		mSection = Location::GetSectionInt(location, 2);
 		const Elf32_Shdr *header = GetFile()->GetSectionHeader(mSection);
 		mOffset = header->sh_offset;
 		mSize = header->sh_size;
@@ -25,8 +25,8 @@ ViewHexDump::ViewHexDump(ElfFile *file, wxString location)
 		base = header->sh_addr;
 		
 		SetName(file->GetSectionName(mSection));
-	} else if(Location::GetSectionString(location, 0) == "segment") {
-		int segment = Location::GetSectionInt(location, 1);
+	} else if(Location::GetSectionString(location, 1) == "segment") {
+		int segment = Location::GetSectionInt(location, 2);
 		const Elf32_Phdr *header = GetFile()->GetProgramHeader(segment);
 		mOffset = header->p_offset;
 		mSize = header->p_memsz;
@@ -199,7 +199,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 					Elf32_Rel *rel = (Elf32_Rel*)(relSectionBuf + relSectionHeader->sh_entsize * relIndex);
 					if(rel->r_offset == i) {
 						wxString relText = file->GetSymbolName(relSymtab, ELF32_R_SYM(rel->r_info));
-						wxString relTarget = Location::BuildLocation(file, wxString::Format("section/%i", relSection), relSectionHeader->sh_entsize * relIndex);
+						wxString relTarget = Location::BuildElfLocation(file, wxString::Format("section/%i", relSection), relSectionHeader->sh_entsize * relIndex);
 						relString = "<a href=\"" + relTarget + "\">" + relText + "</a>";
 						relIndex++;
 					}
@@ -210,7 +210,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		if(symbol < symbols.size()) {
 			mOffsets.push_back(end);
-			wxString target = Location::BuildLocation(file, wxString::Format("section/%i", symbols[symbol].section), symbols[symbol].num * file->GetSectionHeader(symbols[symbol].section)->sh_entsize);
+			wxString target = Location::BuildElfLocation(file, wxString::Format("section/%i", symbols[symbol].section), symbols[symbol].num * file->GetSectionHeader(symbols[symbol].section)->sh_entsize);
 			arrayString.Add("<pre><a href=\"" +target + "\">" + symbols[symbol].name + "</a>:</pre>");
 			
 			int newsym = symbol;

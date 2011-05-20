@@ -8,13 +8,18 @@
 class Location
 {
 public:
-	static wxString BuildLocation(int token, wxString body, wxString offset = "");
-	static wxString BuildLocation(int token, wxString body, int offset);
+	static wxString BuildLocation(wxString prefix, wxString body, wxString offset = "");
+	static wxString BuildLocation(wxString prefix, wxString body, int offset);
 
-	static wxString BuildLocation(ElfFile *file, wxString body, wxString offset = "");
-	static wxString BuildLocation(ElfFile *file, wxString body, int offset);
+	static wxString BuildElfLocation(int token, wxString body, wxString offset = "");
+	static wxString BuildElfLocation(int token, wxString body, int offset);
 
-	static int GetToken(wxString location);
+	static wxString BuildElfLocation(ElfFile *file, wxString body, wxString offset = "");
+	static wxString BuildElfLocation(ElfFile *file, wxString body, int offset);
+
+	static wxString GetPrefix(wxString location);
+
+	static int GetElfToken(wxString location);
 
 	static wxString GetSectionString(wxString location, int section);
 	static int GetSectionInt(wxString location, int section);

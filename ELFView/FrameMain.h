@@ -29,6 +29,10 @@ protected:
 	void OnGoBack(wxCommandEvent &e);
 	void OnGoForward(wxCommandEvent &e);
 	void OnHistoryIndexChanged(wxCommandEvent &e);
+	void OnLink(wxHyperlinkEvent &e);
+	void OnHtmlLink(wxHtmlLinkEvent &e);
+
+	void HandleLink(wxString location);
 
 	DECLARE_EVENT_TABLE();
 };

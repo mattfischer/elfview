@@ -6,7 +6,6 @@
 #include <wx/list.h>
 #include <wx/hyperlink.h>
 
-#include "ElfFile.h"
 #include "View.h"
 #include "ViewManager.h"
 
@@ -15,7 +14,7 @@ class WindowMain : public wxNotebook
 public:
 	WindowMain(wxWindow *parent, wxWindowID id, ViewManager *viewManager);
 
-	void SetFile(ElfFile *file);
+	void GoToLocation(wxString location);
 
 protected:
 
@@ -25,8 +24,6 @@ protected:
 
 	void OnRightUp(wxMouseEvent &e);
 	void OnMenu(wxCommandEvent &e);	
-	void OnLink(wxHyperlinkEvent &e);
-	void OnHtmlLink(wxHtmlLinkEvent &e);
 
 	ViewManager *mViewManager;
 	int mCloseTab;

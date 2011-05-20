@@ -43,7 +43,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCell(rowStart + 4, 1, wxString::Format("0x%x", header->sh_addr));
 
 			mTable->SetCell(rowStart + 5, 0, "Offset");
-			target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", i));
+			target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", i));
 			mTable->SetCell(rowStart + 5, 1, wxString::Format("0x%x", header->sh_offset), target);
 
 			mTable->SetCell(rowStart + 6, 0, "Size");
@@ -54,7 +54,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 				target = "";
 				name = wxString::Format("0x%x", header->sh_link);
 			} else {
-				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_link));
+				target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", header->sh_link));
 				name = GetFile()->GetSectionName(header->sh_link);
 			}
 			mTable->SetCell(rowStart + 7, 1, name, target);
@@ -63,7 +63,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 				target = "";
 				name = wxString::Format("0x%x", header->sh_info);
 			} else {
-				target = Location::BuildLocation(GetFile(), wxString::Format("section/%i", header->sh_info));
+				target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", header->sh_info));
 				name = GetFile()->GetSectionName(header->sh_info);
 			}
 			mTable->SetCell(rowStart + 8, 0, "Info");

@@ -7,6 +7,9 @@
 
 #include "Elf32.h"
 
+#include "Location.h"
+#include "FrameFlags.h"
+
 enum {
 	ID_File_Open,
 	ID_File_Exit,
@@ -101,9 +104,34 @@ void FrameMain::OnHistoryIndexChanged(wxCommandEvent &e)
 	}
 }
 
+
+void FrameMain::OnLink(wxHyperlinkEvent &e)
+{
+	HandleLink(e.GetURL());
+}
+
+void FrameMain::OnHtmlLink(wxHtmlLinkEvent &e)
+{
+	HandleLink(e.GetLinkInfo().GetHref());
+}
+
+void FrameMain::HandleLink(wxString location)
+{
+	if(Location::GetPrefix(location) == "elf") {
+		mWindowMain->GoToLocation(location);
+	} else if(Location::GetPrefix(location) == "flags") {
+		FrameFlags *frameFlags = FrameFlags::GetInstance(this, wxID_ANY);
+
+		frameFlags->SetLocation(location);
+		frameFlags->Show();
+	}
+}
+
 BEGIN_EVENT_TABLE(FrameMain, wxFrame)
 	EVT_MENU(ID_File_Open, FrameMain::OnFileOpen)
 	EVT_MENU(ID_File_Exit, FrameMain::OnFileExit)
 	EVT_MENU(ID_Go_Back, FrameMain::OnGoBack)
 	EVT_MENU(ID_Go_Forward, FrameMain::OnGoForward)
+	EVT_HYPERLINK(wxID_ANY, FrameMain::OnLink)
+	EVT_HTML_LINK_CLICKED(wxID_ANY, FrameMain::OnHtmlLink)
 END_EVENT_TABLE()
