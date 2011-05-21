@@ -30,6 +30,7 @@ protected:
 
 	void SetupValues(wxString section);
 	void AddValue(wxString name, int value);
+	void SetRowBold(int row, bool bold);
 
 	void OnClose(wxCommandEvent &e);
 

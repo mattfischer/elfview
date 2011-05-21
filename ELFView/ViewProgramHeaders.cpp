@@ -10,6 +10,26 @@ ViewProgramHeaders::ViewProgramHeaders(ElfFile *file, wxString location)
 	SetName("Program Headers");
 }
 
+static wxString GetTypeDescription(int type)
+{
+	switch(type) {
+		case PT_LOAD:
+			return "LOAD";
+		case PT_DYNAMIC:
+			return "DYNAMIC";
+		case PT_INTERP:
+			return "INTERP";
+		case PT_NOTE:
+			return "NOTE";
+		case PT_SHLIB:
+			return "SHLIB";
+		case PT_PHDR:
+			return "PHDR";
+		default:
+			return "";
+	}
+}
+
 wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mTable = new LinkTable(parent, id);
@@ -31,7 +51,7 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCellFont(rowStart, 0, font);
 
 			mTable->SetCell(rowStart + 1, 0, "Type");
-			mTable->SetCell(rowStart + 1, 1, wxString::Format("0x%x", header->p_type));
+			mTable->SetCell(rowStart + 1, 1, GetTypeDescription(header->p_type), Location::BuildLocation("flags", "segment-type", header->p_type));
 
 			mTable->SetCell(rowStart + 2, 0, "Offset");
 			wxString target = Location::BuildElfLocation(GetFile(), wxString::Format("segment/%i", i));

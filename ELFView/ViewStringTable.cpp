@@ -5,7 +5,7 @@
 ViewStringTable::ViewStringTable(ElfFile *file, wxString location)
 : View(file, location)
 {
-	mSection = Location::GetSectionInt(location, 1);
+	mSection = Location::GetSectionInt(location, 2);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 

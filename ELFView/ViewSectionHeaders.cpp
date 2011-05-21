@@ -8,6 +8,38 @@ ViewSectionHeaders::ViewSectionHeaders(ElfFile *file, wxString location)
 	SetName("Section Headers");
 }
 
+static wxString GetTypeDescription(int type)
+{
+	switch(type) {
+		case SHT_NULL:
+			return "NULL";
+		case SHT_PROGBITS:
+			return "PROGBITS";
+		case SHT_SYMTAB:
+			return "SYMTAB";
+		case SHT_STRTAB:
+			return "STRTAB";
+		case SHT_RELA:
+			return "RELA";
+		case SHT_HASH:
+			return "HASH";
+		case SHT_DYNAMIC:
+			return "DYNAMIC";
+		case SHT_NOTE:
+			return "NOTE";
+		case SHT_NOBITS:
+			return "NOBITS";
+		case SHT_REL:
+			return "REL";
+		case SHT_SHLIB:
+			return "SHLIB";
+		case SHT_DYNSYM:
+			return "DYNSYM";
+		default:
+			return "(Unknown)";
+	}
+}
+
 wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 {
 	mTable = new LinkTable(parent, id);
@@ -34,7 +66,7 @@ wxWindow *ViewSectionHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCell(rowStart + 1, 1, GetFile()->GetSectionName(i));
 
 			mTable->SetCell(rowStart + 2, 0, "Type");
-			mTable->SetCell(rowStart + 2, 1, wxString::Format("0x%x", header->sh_type));
+			mTable->SetCell(rowStart + 2, 1, GetTypeDescription(header->sh_type), Location::BuildLocation("flags", "section-type", header->sh_type));
 
 			mTable->SetCell(rowStart + 3, 0, "Flags");
 			mTable->SetCell(rowStart + 3, 1, wxString::Format("0x%x", header->sh_flags));

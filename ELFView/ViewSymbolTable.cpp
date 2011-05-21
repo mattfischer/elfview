@@ -5,7 +5,7 @@
 ViewSymbolTable::ViewSymbolTable(ElfFile *file, wxString location)
 : View(file, location)
 {
-	mSection = Location::GetSectionInt(location, 1);
+	mSection = Location::GetSectionInt(location, 2);
 	SetName(GetFile()->GetSectionName(mSection));
 }
 
@@ -100,8 +100,8 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		mTable->SetCell(i-1, 1, wxString::Format("0x%x", sym->st_value), target);
 		mTable->SetCell(i-1, 2, wxString::Format("0x%x", sym->st_size));
-		mTable->SetCell(i-1, 3, wxString::Format("%s", GetBindDescription(ELF32_ST_BIND(sym->st_info)).c_str()));
-		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()));
+		mTable->SetCell(i-1, 3, wxString::Format("%s", GetBindDescription(ELF32_ST_BIND(sym->st_info)).c_str()), Location::BuildLocation("flags", "symbol-bind", ELF32_ST_BIND(sym->st_info)));
+		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()), Location::BuildLocation("flags", "symbol-type", ELF32_ST_TYPE(sym->st_info)));
 		
 		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
 			target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", sym->st_shndx));
