@@ -1,6 +1,7 @@
 #include "ViewProgramHeaders.h"
 
 #include "Location.h"
+#include "FlagManager.h"
 
 extern wxWindow *gWindowMain;
 
@@ -51,7 +52,8 @@ wxWindow *ViewProgramHeaders::doCreateWindow(wxWindow *parent, wxWindowID id)
 			mTable->SetCellFont(rowStart, 0, font);
 
 			mTable->SetCell(rowStart + 1, 0, "Type");
-			mTable->SetCell(rowStart + 1, 1, GetTypeDescription(header->p_type), Location::BuildLocation("flags", "segment-type", header->p_type));
+			mTable->SetCell(rowStart + 1, 1, FlagManager::GetDescription(FlagManager::SetSegmentType, header->p_type),
+				Location::BuildFlagLocation(FlagManager::SetSegmentType, header->p_type));
 
 			mTable->SetCell(rowStart + 2, 0, "Offset");
 			wxString target = Location::BuildElfLocation(GetFile(), wxString::Format("segment/%i", i));

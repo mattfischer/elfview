@@ -57,7 +57,7 @@ void ViewManager::GoToLocation(wxString location, bool addToHistory)
 		ProcessEvent(evt2);
 
 		mCurrentView = idx;
-		view->SetOffset(Location::GetOffsetInt(location));
+		view->SetOffset(Location::GetOffset(location));
 	}
 }
 
@@ -208,7 +208,7 @@ wxString ViewManager::TranslateLocation(wxString location)
 	}
 
 	if(Location::GetSectionString(location, 1) == "absolute") {
-		int offset = Location::GetOffsetInt(location);
+		int offset = Location::GetOffset(location);
 		for(int i=0; i<file->GetHeader()->e_shnum; i++) {
 			const Elf32_Shdr *header = file->GetSectionHeader(i);
 

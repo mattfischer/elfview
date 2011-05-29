@@ -164,6 +164,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FlagManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FrameFlags.cpp"
 				>
 			</File>
@@ -247,6 +251,10 @@
 			</File>
 			<File
 				RelativePath=".\FileManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FlagManager.h"
 				>
 			</File>
 			<File

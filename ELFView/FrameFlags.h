@@ -4,6 +4,8 @@
 #include <wx/frame.h>
 #include <wx/grid.h>
 
+#include "FlagManager.h"
+
 #include <vector>
 
 class FrameFlags : public wxFrame
@@ -20,16 +22,9 @@ protected:
 	wxGrid *mGrid;
 	wxString mLocation;
 
-	struct FlagValue {
-		wxString name;
-		int value;
-
-		FlagValue(wxString n, int v) : name(n), value(v) {}
-	};
-	std::vector<FlagValue> mValues;
+	std::vector<FlagManager::Value> mValues;
 
 	void SetupValues(wxString section);
-	void AddValue(wxString name, int value);
 	void SetRowBold(int row, bool bold);
 
 	void OnClose(wxCommandEvent &e);

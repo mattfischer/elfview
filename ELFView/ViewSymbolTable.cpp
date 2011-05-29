@@ -1,44 +1,13 @@
 #include "ViewSymbolTable.h"
 
 #include "Location.h"
+#include "FlagManager.h"
 
 ViewSymbolTable::ViewSymbolTable(ElfFile *file, wxString location)
 : View(file, location)
 {
 	mSection = Location::GetSectionInt(location, 2);
 	SetName(GetFile()->GetSectionName(mSection));
-}
-
-static wxString GetBindDescription(int bind)
-{
-	switch(bind) {
-		case STB_LOCAL:
-			return "LOCAL";
-		case STB_GLOBAL:
-			return "GLOBAL";
-		case STB_WEAK:
-			return "WEAK";
-		default:
-			return "(Unknown)";
-	}
-}
-
-static wxString GetTypeDescription(int type)
-{
-	switch(type) {
-		case STT_NOTYPE:
-			return "NONE";
-		case STT_OBJECT:
-			return "OBJECT";
-		case STT_FUNC:
-			return "FUNCTION";
-		case STT_SECTION:
-			return "SECTION";
-		case STT_FILE:
-			return "FILE";
-		default:
-			return "(Unknown)";
-	}
 }
 
 static wxString GetSectionDescription(int section, ElfFile *file)
@@ -100,8 +69,10 @@ wxWindow *ViewSymbolTable::doCreateWindow(wxWindow *parent, wxWindowID id)
 
 		mTable->SetCell(i-1, 1, wxString::Format("0x%x", sym->st_value), target);
 		mTable->SetCell(i-1, 2, wxString::Format("0x%x", sym->st_size));
-		mTable->SetCell(i-1, 3, wxString::Format("%s", GetBindDescription(ELF32_ST_BIND(sym->st_info)).c_str()), Location::BuildLocation("flags", "symbol-bind", ELF32_ST_BIND(sym->st_info)));
-		mTable->SetCell(i-1, 4, wxString::Format("%s", GetTypeDescription(ELF32_ST_TYPE(sym->st_info)).c_str()), Location::BuildLocation("flags", "symbol-type", ELF32_ST_TYPE(sym->st_info)));
+		mTable->SetCell(i-1, 3, wxString::Format("%s", FlagManager::GetDescription(FlagManager::SetSymbolBind, ELF32_ST_BIND(sym->st_info)).c_str()),
+			Location::BuildFlagLocation(FlagManager::SetSymbolBind, ELF32_ST_BIND(sym->st_info)));
+		mTable->SetCell(i-1, 4, wxString::Format("%s", FlagManager::GetDescription(FlagManager::SetSymbolType, ELF32_ST_TYPE(sym->st_info)).c_str()),
+			Location::BuildFlagLocation(FlagManager::SetSymbolType, ELF32_ST_TYPE(sym->st_info)));
 		
 		if(sym->st_shndx != SHN_UNDEF && sym->st_shndx != SHN_ABS) {
 			target = Location::BuildElfLocation(GetFile(), wxString::Format("section/%i", sym->st_shndx));

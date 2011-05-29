@@ -1,6 +1,7 @@
 #include "ViewElfHeader.h"
 
 #include "Location.h"
+#include "FlagManager.h"
 
 #include <wx/htmllbox.h>
 
@@ -9,24 +10,6 @@ ViewElfHeader::ViewElfHeader(ElfFile *file, wxString location)
 : View(file, location)
 {
 	SetName("ELF Header");
-}
-
-static wxString GetTypeDescription(int type)
-{
-	switch(type) {
-		case ET_NONE:
-			return "NONE";
-		case ET_REL:
-			return "REL";
-		case ET_EXEC:
-			return "EXEC";
-		case ET_DYN:
-			return "DYN";
-		case ET_CORE:
-			return "CORE";
-		default:
-			return "(Unknown)";
-	}
 }
 
 wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
@@ -43,7 +26,8 @@ wxWindow *ViewElfHeader::doCreateWindow(wxWindow *parent, wxWindowID id)
 	mTable->SetColumnLabel(1, "Value");
 
 	mTable->SetCell(0, 0, "Type");
-	mTable->SetCell(0, 1, GetTypeDescription(header->e_type), Location::BuildLocation("flags", "elf-type", header->e_type));
+	mTable->SetCell(0, 1, FlagManager::GetDescription(FlagManager::SetElfType, header->e_type),
+		Location::BuildFlagLocation(FlagManager::SetElfType, header->e_type));
 
 	mTable->SetCell(1, 0, "Machine");
 	mTable->SetCell(1, 1, wxString::Format("0x%x", header->e_machine));

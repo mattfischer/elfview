@@ -2,43 +2,32 @@
 
 #include <wx/arrstr.h>
 
-wxString Location::BuildLocation(wxString prefix, wxString body, wxString offset)
+wxString Location::BuildLocation(wxString prefix, wxString body, int offset)
 {
 	wxString location = prefix + "://";
 
 	location += body;
 
-	if(offset != "") {
-		location += "#" + offset;
+	if(offset != -1) {
+		location += "#" + wxString::Format("%i", offset);
 	}
 
 	return location;
 }
 
-wxString Location::BuildLocation(wxString prefix, wxString body, int offset)
-{
-	return BuildLocation(prefix, body, wxString::Format("%i", offset));
-}
-
-
-wxString Location::BuildElfLocation(int token, wxString body, wxString offset)
-{
-	return BuildLocation("elf", wxString::Format("%i/%s", token, body.c_str()), offset);
-}
-
 wxString Location::BuildElfLocation(int token, wxString body, int offset)
 {
-	return BuildElfLocation(token, body, wxString::Format("%i", offset));
-}
-
-wxString Location::BuildElfLocation(ElfFile *file, wxString body, wxString offset)
-{
-	return BuildElfLocation(file->GetToken(), body, offset);
+	return BuildLocation("elf", wxString::Format("%i/%s", token, body.c_str()), offset);
 }
 
 wxString Location::BuildElfLocation(ElfFile *file, wxString body, int offset)
 {
 	return BuildElfLocation(file->GetToken(), body, offset);
+}
+
+wxString Location::BuildFlagLocation(FlagManager::Set set, int value)
+{
+	return BuildLocation("flags", wxString::Format("%i", set), value);
 }
 
 static void Split(wxString location, wxString &prefix, wxArrayString &body, wxString &offset)
@@ -119,7 +108,7 @@ int Location::GetSectionInt(wxString location, int section)
 	}
 }
 
-wxString Location::GetOffsetString(wxString location)
+int Location::GetOffset(wxString location)
 {
 	wxString prefix;
 	wxArrayString body;
@@ -127,14 +116,8 @@ wxString Location::GetOffsetString(wxString location)
 
 	Split(location, prefix, body, offset);
 
-	return offset;
-}
-
-int Location::GetOffsetInt(wxString location)
-{
-	wxString str = GetOffsetString(location);
 	long n;
-	bool success = str.ToLong(&n);
+	bool success = offset.ToLong(&n);
 
 	if(success) {
 		return n;

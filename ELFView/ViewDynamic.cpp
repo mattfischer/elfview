@@ -1,6 +1,7 @@
 #include "ViewDynamic.h"
 
 #include "Location.h"
+#include "FlagManager.h"
 
 #include <wx/msgdlg.h>
 #include <wx/dcclient.h>
@@ -102,7 +103,8 @@ wxWindow *ViewDynamic::doCreateWindow(wxWindow *parent, wxWindowID id)
 	for(int i=0; i<numEntries; i++) {
 		Elf32_Dyn *dyn = (Elf32_Dyn*)(buffer + i * sizeof(Elf32_Dyn));
 
-		mTable->SetCell(i, 0, GetTagDescription(dyn->d_tag), Location::BuildLocation("flags", "dynamic-type", dyn->d_tag));
+		mTable->SetCell(i, 0, FlagManager::GetDescription(FlagManager::SetDynamicType, dyn->d_tag),
+			Location::BuildFlagLocation(FlagManager::SetDynamicType, dyn->d_tag));
 
 		wxString value;
 		switch(dyn->d_tag) {
