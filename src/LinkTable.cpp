@@ -112,7 +112,8 @@ bool LinkTable::IsOverLink(wxPoint point)
 
 	wxGridCellAttr *attr = GetOrCreateCellAttr(coord.GetRow(), coord.GetCol());
 	wxGridCellRenderer *renderer = GetCellRenderer(coord.GetRow(), coord.GetCol());
-	wxSize textSize = renderer->GetBestSize(*this, *attr, wxWindowDC(this), coord.GetRow(), coord.GetCol());
+	wxWindowDC dc(this);
+	wxSize textSize = renderer->GetBestSize(*this, *attr, dc, coord.GetRow(), coord.GetCol());
 	attr->DecRef();
 	wxRect rect = CellToRect(coord);
 	

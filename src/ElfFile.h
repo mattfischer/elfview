@@ -10,7 +10,7 @@
 class ElfFile
 {
 public:
-	ElfFile(wxString &filename);
+	ElfFile(wxString filename);
 
 	size_t Read(void *buffer, wxFileOffset offset, size_t size);
 

@@ -2,7 +2,7 @@
 
 static int nextToken = 0;
 
-ElfFile::ElfFile(wxString &filename)
+ElfFile::ElfFile(wxString filename)
 : mFile(filename.c_str())
 {
 	Read(&mHeader, 0, sizeof(Elf32_Ehdr));

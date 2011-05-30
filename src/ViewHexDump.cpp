@@ -123,7 +123,7 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 		delete[] buffer;
 	}
 
-	std::sort(symbols.begin(), symbols.end());
+//	std::sort(symbols.begin(), symbols.end());
 
 	unsigned char *buffer = new unsigned char[mFileSize];
 	GetFile()->Read(buffer, mOffset, mFileSize);
