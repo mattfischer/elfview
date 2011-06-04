@@ -1,8 +1,10 @@
 bin_PROGRAMS = elfview
 
-elfview_CXXFLAGS = \
+include_flags = \
   -I/c/wxWidgets-2.9.1/include \
   -I/c/wxWidgets-2.9.1/build-mingw/lib/wx/include/msw-unicode-static-2.9
+
+elfview_CXXFLAGS = $(include_flags)
 
 elfview_LDFLAGS = \
   -L/c/wxWidgets-2.9.1/build-mingw/lib \
@@ -19,7 +21,6 @@ elfview_LDADD = \
   -lcomctl32 \
   -lwinspool \
   -luuid
-
 
 elfview_SOURCES = \
   App.cpp \
@@ -45,4 +46,4 @@ elfview_SOURCES = \
   Resource.rc
   
 .rc.o:
-	windres --input $< --output $@
+	windres $(include_flags) -i $< -o $@
