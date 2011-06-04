@@ -41,4 +41,8 @@ elfview_SOURCES = \
   ViewManager.cpp \
   WindowNavigator.cpp \
   LinkTable.cpp \
-  ViewProgramHeaders.cpp
+  ViewProgramHeaders.cpp \
+  Resource.rc
+  
+.rc.o:
+	windres --input $< --output $@
