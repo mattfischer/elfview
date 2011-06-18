@@ -2,6 +2,7 @@
 #define VIEW_HEX_DUMP_H
 
 #include "View.h"
+#include "Disassembler.h"
 
 #include <wx/htmllbox.h>
 #include <vector>
@@ -22,6 +23,7 @@ protected:
 	int mSize;
 	bool mRel;
 	std::vector<int> mOffsets;
+	Disassembler mDisassembler;
 
 	wxSimpleHtmlListBox *mHtmlListBox;
 };

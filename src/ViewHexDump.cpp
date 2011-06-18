@@ -145,14 +145,13 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 			end = mSize;
 		}
 
-		for(int i=start; i<end; i += 4) {
+		for(int i=start; i<end; ) {
 			wxString hex;
 			wxString ascii;
 			int extraSpace = 4;
-			int num = 4;
-			if(end - i < 4) {
-				num = end - i;
-			}
+			int num;
+
+			wxString disassembly = mDisassembler.Disassemble(buffer + i, num);
 
 			for(int j=i + num - 1; j>=i; j--) {
 				unsigned char c;
@@ -168,6 +167,8 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 				extraSpace--;
 			}
 
+			hex += "  " + disassembly + "  ";
+			
 			for(int j=0; j<extraSpace; j++) {
 				hex += "  ";
 			}
@@ -206,6 +207,8 @@ wxWindow *ViewHexDump::doCreateWindow(wxWindow *parent, wxWindowID id)
 				}
 			}
 			arrayString.Add("<pre>" + addr + hex + "  " + relString + "</pre>");
+
+			i += num;
 		}
 
 		if(symbol < symbols.size()) {

@@ -2,12 +2,14 @@ bin_PROGRAMS = elfview
 
 include_flags = \
   -I/c/wxWidgets-2.9.1/include \
-  -I/c/wxWidgets-2.9.1/build-mingw/lib/wx/include/msw-unicode-static-2.9
+  -I/c/wxWidgets-2.9.1/build-mingw/lib/wx/include/msw-unicode-static-2.9 \
+  -I/c/projects/binutils-2.21/include/
 
 elfview_CXXFLAGS = $(include_flags)
 
 elfview_LDFLAGS = \
   -L/c/wxWidgets-2.9.1/build-mingw/lib \
+  -L/c/projects/binutils-2.21/build/opcodes \
   -mwindows \
   -static
 
@@ -20,29 +22,34 @@ elfview_LDADD = \
   -loleaut32 \
   -lcomctl32 \
   -lwinspool \
-  -luuid
+  -luuid \
+  -lopcodes \
+  -lintl \
+  -liberty \
+  -liconv
 
 elfview_SOURCES = \
   App.cpp \
-  Location.cpp \
-  ViewRelocations.cpp \
+  Disassembler.cpp \
   ElfFile.cpp \
-  View.cpp \
-  ViewSectionHeaders.cpp \
   FileManager.cpp \
-  ViewDynamic.cpp \
-  ViewStringTable.cpp \
   FlagManager.cpp \
-  ViewElfHeader.cpp \
-  ViewSymbolTable.cpp \
   FrameFlags.cpp \
-  ViewHexDump.cpp \
-  WindowMain.cpp \
   FrameMain.cpp \
-  ViewManager.cpp \
-  WindowNavigator.cpp \
   LinkTable.cpp \
+  Location.cpp \
+  View.cpp \
+  ViewDynamic.cpp \  
+  ViewElfHeader.cpp \
+  ViewHexDump.cpp \
+  ViewManager.cpp \
   ViewProgramHeaders.cpp \
+  ViewRelocations.cpp \  
+  ViewSectionHeaders.cpp \  
+  ViewStringTable.cpp \
+  ViewSymbolTable.cpp \
+  WindowMain.cpp \
+  WindowNavigator.cpp \
   Resource.rc
   
 .rc.o:
